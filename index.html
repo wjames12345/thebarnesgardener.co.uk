@@ -4342,6 +4342,7 @@
   /* ─── MAP PAGE: full-screen, pinch-to-zoom + pan ─── */
   #m-map {
     padding: 0;
+    position: relative;
   }
   #m-map .mob-page-back {
     top: 18px;
@@ -4374,15 +4375,68 @@
   }
   .mob-map-canvas img {
     display: block;
-    width: 100vw;
-    max-width: 100vw;
-    height: auto;
-    max-height: 100svh;
-    object-fit: contain;
+    width: auto;
+    height: 100svh;
+    max-width: none;
+    max-height: none;
     user-select: none;
     -webkit-user-drag: none;
     pointer-events: none;
     mix-blend-mode: multiply;
+  }
+  .mob-map-zoom {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    z-index: 5;
+    background: rgba(244, 240, 230, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+  }
+  .mob-map-zoom-icon {
+    flex: 0 0 auto;
+    color: var(--moss, #4a5d3a);
+    opacity: 0.75;
+    pointer-events: none;
+  }
+  .mob-map-zoom-icon.lg { transform: scale(1.25); }
+  .mob-map-zoom-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1 1 auto;
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.18);
+    border-radius: 999px;
+    outline: none;
+    margin: 0;
+  }
+  .mob-map-zoom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--moss, #4a5d3a);
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+  }
+  .mob-map-zoom-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--moss, #4a5d3a);
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
   }
 
   /* ─── GENERATOR PAGE: 1·2·3 steps + photo upload form ─── */
@@ -5904,6 +5958,11 @@
         <img src="NEW MAP transparent.png" alt="Map of the work area" loading="lazy" decoding="async">
       </div>
     </div>
+    <div class="mob-map-zoom" role="group" aria-label="Map zoom">
+      <svg class="mob-map-zoom-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <input type="range" class="mob-map-zoom-slider" id="mobMapZoom" min="1" max="5" step="0.02" value="1" aria-label="Zoom level">
+      <svg class="mob-map-zoom-icon lg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><line x1="12" y1="5" x2="12" y2="19"/></svg>
+    </div>
   </section>
 
   <section class="mob-section" id="m-blog">
@@ -6355,6 +6414,7 @@
   (function setupMobMap() {
     const viewport = document.getElementById('mobMapViewport');
     const canvas = document.getElementById('mobMapCanvas');
+    const slider = document.getElementById('mobMapZoom');
     if (!viewport || !canvas) return;
 
     let scale = 1, tx = 0, ty = 0;
@@ -6362,7 +6422,15 @@
 
     const apply = () => {
       canvas.style.transform = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(${scale})`;
+      if (slider && document.activeElement !== slider) slider.value = scale;
     };
+
+    if (slider) {
+      slider.addEventListener('input', () => {
+        scale = Math.max(MIN, Math.min(MAX, parseFloat(slider.value) || 1));
+        apply();
+      });
+    }
 
     // Active touch state
     let pointers = new Map();
@@ -6403,7 +6471,7 @@
         tx = pinchStart.tx + dx;
         ty = pinchStart.ty + dy;
         apply();
-      } else if (pts.length === 1 && panStart && scale > 1.001) {
+      } else if (pts.length === 1 && panStart) {
         tx = panStart.tx + (pts[0].x - panStart.x);
         ty = panStart.ty + (pts[0].y - panStart.y);
         apply();
@@ -6430,6 +6498,7 @@
     const observer = new MutationObserver(() => {
       if (document.body.dataset.mobPage === 'map') {
         scale = 1; tx = 0; ty = 0; apply();
+        if (slider) slider.value = 1;
       }
     });
     observer.observe(document.body, { attributes: true, attributeFilter: ['data-mob-page'] });
