@@ -2567,13 +2567,13 @@
   }
 
   /* ════════════════════════════════════════════════════════════════════
-     TESTIMONIAL GARDENS — two area groups, photo grid per area
+     TESTIMONIAL GARDENS — flat 3-across grid, centred captions
      ════════════════════════════════════════════════════════════════════ */
   .page-gardens .page-inner {
     padding: var(--page-pad-y-tight) var(--page-pad-x);
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 32px;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
@@ -2582,94 +2582,60 @@
   .page-gardens .page-inner::-webkit-scrollbar { width: 6px; }
   .page-gardens .page-inner::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
 
-  .gardens-head { max-width: 880px; }
+  .gardens-head { text-align: center; }
   .gardens-head h2 {
     font-family: 'Fraunces', serif;
     font-weight: 400;
-    font-size: 50px;
-    line-height: 0.96;
+    font-size: clamp(40px, 4vw, 56px);
+    line-height: 1;
     letter-spacing: -0.025em;
     color: var(--ink);
-    margin-bottom: 12px;
-  }
-  .gardens-head h2 em {
-    font-style: italic;
-    color: var(--moss);
-    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
-  }
-  .gardens-lead {
-    font-family: 'Fraunces', serif;
-    font-size: 16px;
-    line-height: 1.45;
-    color: var(--ink-soft);
+    white-space: nowrap;
   }
 
-  .gardens-areas {
+  .gardens-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 36px;
-    max-width: 1200px;
-    border-top: 1px solid var(--rule);
-    padding-top: 24px;
-  }
-  .gardens-area {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 18px;
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    background: var(--paper);
-  }
-  .gardens-area-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px 28px;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
   }
   .gardens-tile {
-    position: relative;
-    display: block;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    border-radius: 4px;
-    cursor: pointer;
-    background: var(--cream-deep);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
   }
   .gardens-tile img {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
+    border-radius: 4px;
+    background: var(--cream-deep);
     transition: transform 0.6s var(--ease);
   }
-  .gardens-tile:hover img,
-  .gardens-tile:focus-visible img { transform: scale(1.04); }
+  .gardens-tile:hover img { transform: scale(1.02); }
   .gardens-tile-name {
-    position: absolute;
-    left: 10px;
-    bottom: 10px;
-    background: rgba(27, 36, 24, 0.78);
-    color: var(--cream);
-    padding: 6px 10px;
-    border-radius: 3px;
+    display: block;
+    margin-top: 12px;
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    line-height: 1.15;
+    letter-spacing: -0.018em;
+    color: var(--ink);
+  }
+  .gardens-tile-area {
+    display: block;
+    margin-top: 4px;
     font-family: 'DM Sans', sans-serif;
     font-size: 10.5px;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
+    color: var(--sage);
     font-weight: 500;
-  }
-  .gardens-tile:focus-visible {
-    outline: 2px solid var(--moss);
-    outline-offset: 3px;
-  }
-  .gardens-area-name {
-    text-align: center;
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 400;
-    font-size: 26px;
-    color: var(--moss);
-    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
-    margin-top: 4px;
   }
 
   /* ════════════════════════════════════════════════════════════════════
@@ -4656,42 +4622,55 @@
     cursor: pointer;
   }
 
-  /* ─── TESTIMONIAL GARDENS — vertical scrollable list ─── */
-  #m-gardens h2 { margin-bottom: 14px; }
-  #m-gardens .lead { margin-bottom: 26px; }
+  /* ─── TESTIMONIAL GARDENS — vertical scrollable list, centred ─── */
+  .mob-gardens-title {
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(34px, 8vw, 42px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 24px;
+    white-space: nowrap;
+  }
   .mob-gardens-list {
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 22px;
+    align-items: center;
   }
   .mob-gardens-card {
     display: block;
     text-decoration: none;
     color: inherit;
-    cursor: pointer;
+    width: 72%;
+    max-width: 280px;
+    text-align: center;
   }
   .mob-gardens-card img {
     width: 100%;
-    height: 220px;
+    height: 150px;
     object-fit: cover;
     display: block;
     border-radius: 4px;
     background: var(--cream-deep);
+    margin: 0 auto;
   }
   .mob-gardens-card-name {
     display: block;
-    margin-top: 10px;
+    margin-top: 8px;
     font-family: 'Fraunces', serif;
-    font-size: 22px;
+    font-size: 18px;
     line-height: 1.15;
     letter-spacing: -0.018em;
     color: var(--ink);
   }
   .mob-gardens-card-area {
     display: block;
-    margin-top: 4px;
+    margin-top: 2px;
     font-family: 'DM Sans', sans-serif;
-    font-size: 10.5px;
+    font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--sage);
@@ -5577,54 +5556,50 @@
       <section class="page page-gardens" id="gardens">
         <div class="page-inner">
           <div class="gardens-head fade-in" style="--fade-delay: 0.0s;">
-            <h2>Testimonial <em>Gardens</em>.</h2>
-            <p class="gardens-lead">A working portfolio — gardens Gary has shaped over the years, grouped by the area where he's worked.</p>
+            <h2>Testimonial Gardens</h2>
           </div>
 
-          <div class="gardens-areas fade-in" style="--fade-delay: 0.18s;">
-            <article class="gardens-area">
-              <div class="gardens-area-grid">
-                <a class="gardens-tile" data-road="Castelnau" data-area="Barnes" aria-label="Castelnau, Barnes">
-                  <img src="garden-after.jpg" alt="Castelnau garden" loading="lazy" decoding="async">
-                  <span class="gardens-tile-name">Castelnau</span>
-                </a>
-                <a class="gardens-tile" data-road="Lonsdale Road" data-area="Barnes" aria-label="Lonsdale Road, Barnes">
-                  <img src="garden-before.jpg" alt="Lonsdale Road garden" loading="lazy" decoding="async">
-                  <span class="gardens-tile-name">Lonsdale Road</span>
-                </a>
-                <a class="gardens-tile" data-road="Riverview Gardens" data-area="Barnes" aria-label="Riverview Gardens, Barnes">
-                  <img src="after.jpg" alt="Riverview Gardens" loading="lazy" decoding="async">
-                  <span class="gardens-tile-name">Riverview Gardens</span>
-                </a>
-                <a class="gardens-tile" data-road="Westmoreland Road" data-area="Barnes" aria-label="Westmoreland Road, Barnes">
-                  <img src="before.jpg" alt="Westmoreland Road garden" loading="lazy" decoding="async">
-                  <span class="gardens-tile-name">Westmoreland Road</span>
-                </a>
-              </div>
-              <h3 class="gardens-area-name">Barnes</h3>
-            </article>
-
-            <article class="gardens-area">
-              <div class="gardens-area-grid">
-                <a class="gardens-tile" data-road="Lytton Grove" data-area="Putney" aria-label="Lytton Grove, Putney">
-                  <img src="garden-after.jpg" alt="Lytton Grove garden" loading="lazy" decoding="async">
-                  <span class="gardens-tile-name">Lytton Grove</span>
-                </a>
-                <a class="gardens-tile" data-road="Carlton Drive" data-area="Putney" aria-label="Carlton Drive, Putney">
-                  <img src="garden-before.jpg" alt="Carlton Drive garden" loading="lazy" decoding="async">
-                  <span class="gardens-tile-name">Carlton Drive</span>
-                </a>
-                <a class="gardens-tile" data-road="Disraeli Road" data-area="Putney" aria-label="Disraeli Road, Putney">
-                  <img src="after.jpg" alt="Disraeli Road garden" loading="lazy" decoding="async">
-                  <span class="gardens-tile-name">Disraeli Road</span>
-                </a>
-                <a class="gardens-tile" data-road="Erpingham Road" data-area="Putney" aria-label="Erpingham Road, Putney">
-                  <img src="before.jpg" alt="Erpingham Road garden" loading="lazy" decoding="async">
-                  <span class="gardens-tile-name">Erpingham Road</span>
-                </a>
-              </div>
-              <h3 class="gardens-area-name">Putney</h3>
-            </article>
+          <div class="gardens-grid fade-in" style="--fade-delay: 0.12s;">
+            <a class="gardens-tile" data-road="Castelnau" data-area="Barnes" aria-label="Castelnau, Barnes">
+              <img src="garden-after.jpg" alt="Castelnau garden" loading="lazy" decoding="async">
+              <span class="gardens-tile-name">Castelnau</span>
+              <span class="gardens-tile-area">Barnes</span>
+            </a>
+            <a class="gardens-tile" data-road="Lonsdale Road" data-area="Barnes" aria-label="Lonsdale Road, Barnes">
+              <img src="garden-before.jpg" alt="Lonsdale Road garden" loading="lazy" decoding="async">
+              <span class="gardens-tile-name">Lonsdale Road</span>
+              <span class="gardens-tile-area">Barnes</span>
+            </a>
+            <a class="gardens-tile" data-road="Riverview Gardens" data-area="Barnes" aria-label="Riverview Gardens, Barnes">
+              <img src="after.jpg" alt="Riverview Gardens" loading="lazy" decoding="async">
+              <span class="gardens-tile-name">Riverview Gardens</span>
+              <span class="gardens-tile-area">Barnes</span>
+            </a>
+            <a class="gardens-tile" data-road="Westmoreland Road" data-area="Barnes" aria-label="Westmoreland Road, Barnes">
+              <img src="before.jpg" alt="Westmoreland Road garden" loading="lazy" decoding="async">
+              <span class="gardens-tile-name">Westmoreland Road</span>
+              <span class="gardens-tile-area">Barnes</span>
+            </a>
+            <a class="gardens-tile" data-road="Lytton Grove" data-area="Putney" aria-label="Lytton Grove, Putney">
+              <img src="garden-after.jpg" alt="Lytton Grove garden" loading="lazy" decoding="async">
+              <span class="gardens-tile-name">Lytton Grove</span>
+              <span class="gardens-tile-area">Putney</span>
+            </a>
+            <a class="gardens-tile" data-road="Carlton Drive" data-area="Putney" aria-label="Carlton Drive, Putney">
+              <img src="garden-before.jpg" alt="Carlton Drive garden" loading="lazy" decoding="async">
+              <span class="gardens-tile-name">Carlton Drive</span>
+              <span class="gardens-tile-area">Putney</span>
+            </a>
+            <a class="gardens-tile" data-road="Disraeli Road" data-area="Putney" aria-label="Disraeli Road, Putney">
+              <img src="after.jpg" alt="Disraeli Road garden" loading="lazy" decoding="async">
+              <span class="gardens-tile-name">Disraeli Road</span>
+              <span class="gardens-tile-area">Putney</span>
+            </a>
+            <a class="gardens-tile" data-road="Erpingham Road" data-area="Putney" aria-label="Erpingham Road, Putney">
+              <img src="before.jpg" alt="Erpingham Road garden" loading="lazy" decoding="async">
+              <span class="gardens-tile-name">Erpingham Road</span>
+              <span class="gardens-tile-area">Putney</span>
+            </a>
           </div>
         </div>
       </section>
@@ -6227,8 +6202,7 @@
     <button class="mob-page-back" type="button" data-mob-back aria-label="Back to home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
-    <h2>Testimonial <em>Gardens</em>.</h2>
-    <p class="lead">A working portfolio — gardens Gary has shaped over the years.</p>
+    <h2 class="mob-gardens-title">Testimonial Gardens</h2>
 
     <div class="mob-gardens-list">
       <a class="mob-gardens-card" data-road="Castelnau" data-area="Barnes">
