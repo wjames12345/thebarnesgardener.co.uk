@@ -5958,10 +5958,10 @@
         <img src="NEW MAP transparent.png" alt="Map of the work area" loading="lazy" decoding="async">
       </div>
     </div>
-    <div class="mob-map-zoom" role="group" aria-label="Map zoom">
-      <svg class="mob-map-zoom-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      <input type="range" class="mob-map-zoom-slider" id="mobMapZoom" min="1" max="5" step="0.02" value="1" aria-label="Zoom level">
-      <svg class="mob-map-zoom-icon lg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><line x1="12" y1="5" x2="12" y2="19"/></svg>
+    <div class="mob-map-zoom" role="group" aria-label="Pan map left or right">
+      <svg class="mob-map-zoom-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      <input type="range" class="mob-map-zoom-slider" id="mobMapZoom" min="0" max="100" step="0.5" value="50" aria-label="Pan map left or right">
+      <svg class="mob-map-zoom-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
   </section>
 
@@ -6420,14 +6420,31 @@
     let scale = 1, tx = 0, ty = 0;
     const MIN = 1, MAX = 5;
 
+    const maxPanX = () => {
+      const img = canvas.querySelector('img');
+      if (!img || !img.offsetWidth) return 0;
+      return Math.max(0, (img.offsetWidth * scale - viewport.offsetWidth) / 2);
+    };
+
     const apply = () => {
       canvas.style.transform = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(${scale})`;
-      if (slider && document.activeElement !== slider) slider.value = scale;
+      if (slider && document.activeElement !== slider) {
+        const m = maxPanX();
+        if (m <= 0) {
+          slider.value = 50;
+        } else {
+          const norm = -tx / m;
+          slider.value = Math.max(0, Math.min(100, 50 - norm * 50));
+        }
+      }
     };
 
     if (slider) {
       slider.addEventListener('input', () => {
-        scale = Math.max(MIN, Math.min(MAX, parseFloat(slider.value) || 1));
+        const m = maxPanX();
+        const v = parseFloat(slider.value);
+        const norm = (50 - v) / 50;
+        tx = norm * m;
         apply();
       });
     }
@@ -6498,7 +6515,7 @@
     const observer = new MutationObserver(() => {
       if (document.body.dataset.mobPage === 'map') {
         scale = 1; tx = 0; ty = 0; apply();
-        if (slider) slider.value = 1;
+        if (slider) slider.value = 50;
       }
     });
     observer.observe(document.body, { attributes: true, attributeFilter: ['data-mob-page'] });
