@@ -9110,18 +9110,22 @@
 
   // ── Tilt-driven device wind ──
   // gamma  = left/right tilt (-90..90), beta = front/back tilt (-180..180).
-  // We map small tilts to a soft prevailing wind that's added to the leaf
+  // We map small tilts to a prevailing wind that's added to the leaf
   // physics each frame. Smoothed so micro-jitter doesn't shake the field.
-  const TILT_RANGE_DEG = 28;     // anything past this clamps to max
-  const TILT_MAX_FORCE = 36;     // px/s² of acceleration at full tilt
-  const TILT_LERP      = 0.08;
+  const TILT_RANGE_DEG = 20;     // anything past this clamps to max
+  const TILT_MAX_FORCE = 140;    // px/s² of acceleration at full tilt — felt clearly against gravity (160)
+  const TILT_LERP      = 0.18;
+  // Reference beta — the angle the phone is at when held upright. Calibrates
+  // on first reading so the user's natural hold position is "no tilt", not
+  // "permanent forward wind".
+  let tiltBetaRef = null;
   let tiltWindX = 0, tiltWindY = 0;
   let tiltTargetX = 0, tiltTargetY = 0;
   function handleOrientation(e) {
     if (e.gamma == null || e.beta == null) return;
+    if (tiltBetaRef == null) tiltBetaRef = e.beta;
     const gx = Math.max(-TILT_RANGE_DEG, Math.min(TILT_RANGE_DEG, e.gamma));
-    // Beta has an offset of ~30° when held naturally upright; subtract.
-    const gy = Math.max(-TILT_RANGE_DEG, Math.min(TILT_RANGE_DEG, e.beta - 30));
+    const gy = Math.max(-TILT_RANGE_DEG, Math.min(TILT_RANGE_DEG, e.beta - tiltBetaRef));
     tiltTargetX = (gx / TILT_RANGE_DEG) * TILT_MAX_FORCE;
     tiltTargetY = (gy / TILT_RANGE_DEG) * TILT_MAX_FORCE;
   }
@@ -9162,27 +9166,39 @@
   }
 
   // ── Permission gate (iOS 13+ requires user-gesture) ──
-  let sensorsEnabled = false;
-  async function enableMotionSensors() {
-    if (sensorsEnabled) return;
-    sensorsEnabled = true;
-    try {
-      if (typeof DeviceOrientationEvent !== 'undefined' &&
-          typeof DeviceOrientationEvent.requestPermission === 'function') {
-        const p = await DeviceOrientationEvent.requestPermission();
-        if (p !== 'granted') return;
-      }
-      if (typeof DeviceMotionEvent !== 'undefined' &&
-          typeof DeviceMotionEvent.requestPermission === 'function') {
-        try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
-      }
-    } catch (e) { /* permission denied — quietly skip */ }
+  // Non-iOS browsers fire deviceorientation freely, so wire the listeners
+  // up immediately. On iOS we only attach them once permission is granted,
+  // and we keep retrying on subsequent taps if the first prompt was denied
+  // or dismissed.
+  let sensorsAttached = false;
+  let sensorsInFlight = false;
+  function attachSensors() {
+    if (sensorsAttached) return;
+    sensorsAttached = true;
     window.addEventListener('deviceorientation', handleOrientation);
     window.addEventListener('devicemotion', handleMotion);
   }
-  // Trigger permission prompt + listener registration on first interaction.
-  window.addEventListener('pointerdown', enableMotionSensors, { once: true });
-  window.addEventListener('touchstart',  enableMotionSensors, { once: true });
+  async function enableMotionSensors() {
+    if (sensorsAttached || sensorsInFlight) return;
+    const needsPerm = typeof DeviceOrientationEvent !== 'undefined' &&
+                      typeof DeviceOrientationEvent.requestPermission === 'function';
+    if (!needsPerm) { attachSensors(); return; }
+    sensorsInFlight = true;
+    try {
+      const p = await DeviceOrientationEvent.requestPermission();
+      if (p === 'granted') {
+        attachSensors();
+        if (typeof DeviceMotionEvent !== 'undefined' &&
+            typeof DeviceMotionEvent.requestPermission === 'function') {
+          try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
+        }
+      }
+    } catch (e) { /* user dismissed — let next tap retry */ }
+    sensorsInFlight = false;
+  }
+  // Try on every early gesture until sensors are attached.
+  window.addEventListener('pointerdown', enableMotionSensors);
+  window.addEventListener('touchstart',  enableMotionSensors);
 
   // ── Pull-to-refresh wind gust ──
   // When the user pulls down past the top of the page and releases, fire
