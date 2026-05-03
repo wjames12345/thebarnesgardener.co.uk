@@ -9227,6 +9227,46 @@
     tiltWindY += (tiltTargetY - tiltWindY) * TILT_LERP;
   }
 
+  // ── TEMP: tilt diagnostic HUD (mobile only) ─────────────────────────────
+  // Tiny overlay top-left so we can see whether the orientation events are
+  // firing, what permission state is, and what numbers are coming through.
+  // Remove this whole block once tilt is confirmed working on the phone.
+  let __tiltHud = null;
+  let __tiltLastGamma = null, __tiltLastBeta = null;
+  let __tiltEventCount = 0;
+  const __origHandleOrientation = handleOrientation;
+  handleOrientation = function (e) {
+    __tiltEventCount++;
+    if (e && e.gamma != null) __tiltLastGamma = e.gamma;
+    if (e && e.beta  != null) __tiltLastBeta  = e.beta;
+    __origHandleOrientation(e);
+  };
+  if (IS_MOBILE_FIELD) {
+    __tiltHud = document.createElement('div');
+    __tiltHud.style.cssText =
+      'position:fixed;top:6px;left:6px;z-index:99999;' +
+      'font:11px/1.3 -apple-system,monospace;' +
+      'background:rgba(0,0,0,.78);color:#fff;padding:6px 8px;' +
+      'border-radius:6px;pointer-events:none;white-space:pre;';
+    document.body.appendChild(__tiltHud);
+    setInterval(() => {
+      const needsPerm = typeof DeviceOrientationEvent !== 'undefined' &&
+                        typeof DeviceOrientationEvent.requestPermission === 'function';
+      const perm = !needsPerm
+        ? 'n/a (non-iOS)'
+        : (sensorsAttached ? 'granted' : (sensorsInFlight ? 'asking…' : 'NOT GRANTED — tap'));
+      __tiltHud.textContent =
+        'perm:   ' + perm + '\n' +
+        'events: ' + __tiltEventCount + '\n' +
+        'gamma:  ' + (__tiltLastGamma == null ? '—' : __tiltLastGamma.toFixed(1)) + '\n' +
+        'beta:   ' + (__tiltLastBeta  == null ? '—' : __tiltLastBeta.toFixed(1))  + '\n' +
+        'betaRef:' + (tiltBetaRef == null ? '—' : tiltBetaRef.toFixed(1)) + '\n' +
+        'windX:  ' + tiltWindX.toFixed(1) + '\n' +
+        'windY:  ' + tiltWindY.toFixed(1);
+    }, 200);
+  }
+  // ── END TEMP HUD ────────────────────────────────────────────────────────
+
   // ── Shake detection ──
   // Track the change in accelerationIncludingGravity each event; a sharp
   // spike = shake. Cooldown stops a single shake from firing repeatedly.
