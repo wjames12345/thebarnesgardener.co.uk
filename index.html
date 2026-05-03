@@ -4234,6 +4234,111 @@
     .ring-dot { opacity: 0.6; animation: none !important; }
   }
 
+  /* ─── SERVICES PAGE: 2-up grid of square cards, tap for popup ─── */
+  .mob-svc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .mob-svc-card {
+    appearance: none;
+    background: transparent;
+    border: 1px solid rgba(27, 36, 24, 0.32);
+    border-radius: 2px;
+    aspect-ratio: 1 / 1;
+    padding: 14px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    text-align: left;
+    cursor: pointer;
+    color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  }
+  .mob-svc-card:active {
+    background: rgba(27, 36, 24, 0.05);
+    transform: scale(0.985);
+  }
+  .mob-svc-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(16px, 4.6vw, 22px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+
+  /* Service popup overlay */
+  .mob-svc-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(27, 36, 24, 0.55);
+    z-index: 1800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+  .mob-svc-popup.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+  }
+  .mob-svc-popup-card {
+    background: var(--cream);
+    padding: 30px 24px 26px;
+    max-width: 460px;
+    width: 100%;
+    border-radius: 4px;
+    position: relative;
+    transform: translateY(18px);
+    transition: transform 0.35s var(--ease);
+    box-shadow: 0 18px 50px rgba(27, 36, 24, 0.22);
+  }
+  .mob-svc-popup.is-open .mob-svc-popup-card { transform: translateY(0); }
+  .mob-svc-popup-close {
+    appearance: none;
+    background: transparent;
+    border: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+    color: var(--ink);
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mob-svc-popup-close svg { width: 22px; height: 22px; }
+  .mob-svc-popup-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin: 0 30px 14px 0;
+  }
+  .mob-svc-popup-body {
+    font-family: 'DM Sans', 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(27, 36, 24, 0.85);
+    margin: 0;
+  }
+
   /* ─── MAP PAGE: full-screen, pinch-to-zoom + pan ─── */
   #m-map {
     padding: 0;
@@ -4269,9 +4374,11 @@
   }
   .mob-map-canvas img {
     display: block;
-    width: 92vw;
-    max-width: 92vw;
+    width: 100vw;
+    max-width: 100vw;
     height: auto;
+    max-height: 100svh;
+    object-fit: contain;
     user-select: none;
     -webkit-user-drag: none;
     pointer-events: none;
@@ -5715,14 +5822,67 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <h2>What's on <em>offer</em>.</h2>
-    <p><strong>Garden renovation</strong> · reworking tired gardens.</p>
-    <p><strong>Lawn care <img class="amp-symbol" src="ampersand.png" alt="and"> irrigation</strong> · feeding, scarifying, smart systems.</p>
-    <p><strong>Regular maintenance</strong> · weekly, fortnightly, monthly.</p>
-    <p><strong>Plant sourcing</strong> · specialist nurseries, the right plant.</p>
-    <p><strong>Productive gardens</strong> · vegetables, herbs, soft fruit.</p>
-    <p><strong>Pruning <img class="amp-symbol" src="ampersand.png" alt="and"> tree care</strong> · wisteria, climbers, fruit trees.</p>
-    <p><strong>Hedges, shaped</strong> · beech, yew, box, hornbeam.</p>
-    <p><strong>Vintage materials</strong> · troughs, urns, staddle stones.</p>
+
+    <div class="mob-svc-grid">
+      <button class="mob-svc-card" type="button"
+              data-svc-title="Garden Renovation"
+              data-svc-body="Reworking gardens that have lost their shape — pulling out what's tired, restructuring beds, replanting from the ground up. The aim is a garden you actually want to be in again.">
+        <span class="mob-svc-title">Garden<br>Renovation</span>
+      </button>
+
+      <button class="mob-svc-card" type="button"
+              data-svc-title="Lawn Care &amp; Irrigation"
+              data-svc-body="Feeding, scarifying, aerating, overseeding. Smart irrigation systems sized to your garden — set them once, forget them, the lawn looks after itself.">
+        <span class="mob-svc-title">Lawn Care<br>&amp; Irrigation</span>
+      </button>
+
+      <button class="mob-svc-card" type="button"
+              data-svc-title="Regular Maintenance"
+              data-svc-body="Weekly, fortnightly or monthly visits. Mowing, weeding, pruning, deadheading — the steady hand that keeps a good garden good.">
+        <span class="mob-svc-title">Regular<br>Maintenance</span>
+      </button>
+
+      <button class="mob-svc-card" type="button"
+              data-svc-title="Plant Sourcing"
+              data-svc-body="Specialist nurseries across the south, picked for the right plant for the right spot. Mature stock, unusual varieties, the things you won't find at a chain garden centre.">
+        <span class="mob-svc-title">Plant<br>Sourcing</span>
+      </button>
+
+      <button class="mob-svc-card" type="button"
+              data-svc-title="Productive Gardens"
+              data-svc-body="Vegetable beds, herb gardens, soft fruit cages. Designed around what you actually eat, planted to last well beyond the first season.">
+        <span class="mob-svc-title">Productive<br>Gardens</span>
+      </button>
+
+      <button class="mob-svc-card" type="button"
+              data-svc-title="Pruning &amp; Tree Care"
+              data-svc-body="Wisteria twice a year, espaliered fruit trees, climbing roses, mature shrubs. Cuts the plant grows out of cleanly — never the panicked hack-back.">
+        <span class="mob-svc-title">Pruning<br>&amp; Tree Care</span>
+      </button>
+
+      <button class="mob-svc-card" type="button"
+              data-svc-title="Hedges, Shaped"
+              data-svc-body="Beech, yew, box, hornbeam. Hand-shaped to keep the lines true and the regrowth dense — never rushed with the hedge cutter.">
+        <span class="mob-svc-title">Hedges,<br>Shaped</span>
+      </button>
+
+      <button class="mob-svc-card" type="button"
+              data-svc-title="Vintage Materials"
+              data-svc-body="Troughs, urns, staddle stones, reclaimed terracotta. Sourced over decades from yards across the south — placed where they belong, not just where they fit.">
+        <span class="mob-svc-title">Vintage<br>Materials</span>
+      </button>
+    </div>
+
+    <!-- Service popup (one instance, reused) -->
+    <div class="mob-svc-popup" id="mobSvcPopup" aria-hidden="true">
+      <div class="mob-svc-popup-card" role="dialog" aria-modal="true" aria-labelledby="mobSvcPopupTitle">
+        <button class="mob-svc-popup-close" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        </button>
+        <h3 class="mob-svc-popup-title" id="mobSvcPopupTitle"></h3>
+        <p class="mob-svc-popup-body"></p>
+      </div>
+    </div>
   </section>
 
   <section class="mob-section" id="m-contact">
@@ -6263,18 +6423,6 @@
     viewport.addEventListener('pointerup', release);
     viewport.addEventListener('pointercancel', release);
 
-    // Double-tap to reset zoom
-    let lastTap = 0;
-    viewport.addEventListener('pointerdown', (e) => {
-      const now = Date.now();
-      if (now - lastTap < 280 && pointers.size === 1) {
-        scale = scale > 1.01 ? 1 : 2;
-        tx = 0; ty = 0;
-        apply();
-      }
-      lastTap = now;
-    });
-
     // Block native page scroll while interacting with map
     viewport.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 
@@ -6285,6 +6433,42 @@
       }
     });
     observer.observe(document.body, { attributes: true, attributeFilter: ['data-mob-page'] });
+  })();
+
+  /* ─── Mobile services: tap a card → popup with full description ─── */
+  (function setupMobServicePopup() {
+    const popup = document.getElementById('mobSvcPopup');
+    if (!popup) return;
+    const titleEl = popup.querySelector('.mob-svc-popup-title');
+    const bodyEl  = popup.querySelector('.mob-svc-popup-body');
+
+    function openPopup(card) {
+      titleEl.innerHTML = card.getAttribute('data-svc-title') || '';
+      bodyEl.textContent = card.getAttribute('data-svc-body') || '';
+      popup.classList.add('is-open');
+      popup.setAttribute('aria-hidden', 'false');
+    }
+    function closePopup() {
+      popup.classList.remove('is-open');
+      popup.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('.mob-svc-card');
+      if (card) { e.stopPropagation(); openPopup(card); return; }
+      // Tap outside the card or on the close button → close
+      if (e.target.closest('.mob-svc-popup-close')) { closePopup(); return; }
+      if (e.target === popup) { closePopup(); return; }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && popup.classList.contains('is-open')) closePopup();
+    });
+    // Close popup when leaving the services page
+    new MutationObserver(() => {
+      if (document.body.dataset.mobPage !== 'services' && popup.classList.contains('is-open')) {
+        closePopup();
+      }
+    }).observe(document.body, { attributes: true, attributeFilter: ['data-mob-page'] });
   })();
 
   /* ════════════════════════════════════════════════════════════════════
