@@ -2965,8 +2965,8 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: max(96px, env(safe-area-inset-top)) 26px max(40px, env(safe-area-inset-bottom));
-    overflow-y: auto;
+    padding: calc(env(safe-area-inset-top, 0px) + 88px) 26px max(24px, env(safe-area-inset-bottom));
+    overflow: hidden;
     pointer-events: none;
   }
   body.mob-menu-open .mob-menu-overlay {
@@ -3011,7 +3011,7 @@
     grid-template-columns: 1fr auto auto;
     align-items: center;
     gap: 14px;
-    padding: 16px 4px;
+    padding: 10px 4px;
   }
   .mob-menu-label {
     font-family: 'DM Sans', 'Inter', sans-serif;
@@ -3111,8 +3111,8 @@
     .mob-menu-toggle .bars { width: 20px; height: 14px; }
 
     .mob-menu-overlay {
-      padding: max(54px, env(safe-area-inset-top)) 14px max(16px, env(safe-area-inset-bottom));
-      justify-content: flex-start;
+      padding: calc(env(safe-area-inset-top, 0px) + 60px) 14px max(12px, env(safe-area-inset-bottom));
+      justify-content: center;
     }
     .mob-menu-list { gap: 0; }
     .mob-menu-list a {
@@ -5626,7 +5626,6 @@
         <div class="mob-menu-desc"><p>Phone, email, Instagram. Gary replies the same day, usually after the morning's first job.</p></div>
       </li>
     </ul>
-    <div class="mob-menu-foot">© 2026 The Barnes Gardener</div>
   </div>
 
   <!-- ─────────── HERO ─────────── -->
