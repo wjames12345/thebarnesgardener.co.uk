@@ -415,6 +415,14 @@
   .wordmark { position: relative; }
   .wordmark .line { color: var(--moss); }
   .wordmark .line em { color: var(--moss); }
+  .wordmark-img {
+    display: block;
+    width: min(620px, 72vw);
+    height: auto;
+    margin: 0 auto;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
   /* lineRise kept because the mobile hero still uses the same keyframe. */
   @keyframes lineRise {
     from { opacity: 0; transform: translateY(14px); }
@@ -2787,6 +2795,25 @@
   .mob-hero-title .lc:nth-child(1) { animation-delay: 0.20s; }
   .mob-hero-title .lc:nth-child(2) { animation-delay: 0.36s; }
   .mob-hero-title .lc:nth-child(3) { animation-delay: 0.52s; }
+
+  /* Logo variant — when the mobile hero contains the wordmark image
+     instead of stretched type, kill the scaleY transform and let the
+     image size itself naturally. Fade-in inherits from .mob-hero-title. */
+  .mob-hero-title--logo {
+    transform: none;
+    margin: 14px 0 0;
+    line-height: 1;
+  }
+  .mob-hero-logo-img {
+    display: block;
+    width: 88%;
+    max-width: 520px;
+    height: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+    opacity: 0;
+    animation: lineRise 1.1s var(--ease) 0.20s forwards;
+  }
   @keyframes lineRise {
     to { opacity: 1; transform: translateY(0); }
   }
@@ -5460,7 +5487,7 @@
 
     <!-- Persistent UI: logo top-left, begin top-right, sidenav left -->
     <a href="#home" class="corner-logo" data-link aria-label="The Barnes Gardener, home">
-      <img src="__LOGO__" alt="The Barnes Gardener">
+      <img src="logo-wordmark.png" alt="The Barnes Gardener">
     </a>
 
     <a href="#latelier" class="begin-btn" data-link>
@@ -5491,9 +5518,7 @@
       <section class="page page-home active" id="home">
         <div class="page-inner">
           <h1 class="wordmark" id="wordmark">
-            <span class="line">The</span>
-            <span class="line"><span class="moss">Barnes</span></span>
-            <span class="line">Gardener</span>
+            <img class="wordmark-img" src="logo-wordmark.png" alt="The Barnes Gardener">
           </h1>
 
           <div class="home-signature">Established by Gary Hazell in 2016 <img class="amp-symbol" src="ampersand.png" alt="and"> independent ever since.</div>
@@ -6080,7 +6105,7 @@
        page. Reuses data-mob-back so the existing handler routes the user
        to home (loader + page swap). Hidden on home via CSS. -->
   <button class="mob-brand" type="button" data-mob-back aria-label="Home">
-    <img src="logo.png" alt="The Barnes Gardener" decoding="async">
+    <img src="logo-wordmark.png" alt="The Barnes Gardener" decoding="async">
   </button>
 
   <!-- Hamburger toggle — sits top-right on every mobile screen. Tap to fade
@@ -6219,10 +6244,8 @@
   <!-- One-pager: no scroll, no in-page menu. The whole nav lives behind the
        hamburger top-left. Just the elongated wordmark + falling leaves. -->
   <section class="mob-hero" id="m-home">
-    <h1 class="mob-hero-title">
-      <span class="lc">The</span>
-      <span class="lc lc-em">Barnes</span>
-      <span class="lc">Gardener</span>
+    <h1 class="mob-hero-title mob-hero-title--logo">
+      <img class="mob-hero-logo-img" src="logo-wordmark.png" alt="The Barnes Gardener">
     </h1>
 
   </section>
