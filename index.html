@@ -6562,9 +6562,9 @@
       return;
     }
 
-    const row = e.target.closest('.mob-list-row');
-    if (row) {
-      const item = row.closest('.mob-list-item');
+    const listRow = e.target.closest('.mob-list-row');
+    if (listRow) {
+      const item = listRow.closest('.mob-list-item');
       if (!item) return;
       const wasOpen = item.classList.contains('is-open');
       document.querySelectorAll('.mob-list-item.is-open').forEach(o => {
@@ -6574,7 +6574,7 @@
       });
       if (!wasOpen) {
         item.classList.add('is-open');
-        row.setAttribute('aria-expanded', 'true');
+        listRow.setAttribute('aria-expanded', 'true');
       }
     }
   });
