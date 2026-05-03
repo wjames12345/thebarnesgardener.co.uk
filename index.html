@@ -8085,6 +8085,18 @@
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
+  // ── Mobile field flag ──
+  // On mobile/tablet the only force on leaves besides gravity is device tilt.
+  // No ambient breeze, weather drift, periodic gusts, big sweeps, or
+  // ground-skimming gusts. Recomputed on viewport changes so a desktop
+  // window resize / orientation flip swaps modes correctly.
+  const _leafFieldMQ = window.matchMedia('(max-width: 900px), (max-aspect-ratio: 4/5)');
+  let IS_MOBILE_FIELD = _leafFieldMQ.matches;
+  const _onLeafMQ = () => { IS_MOBILE_FIELD = _leafFieldMQ.matches; };
+  if (_leafFieldMQ.addEventListener) _leafFieldMQ.addEventListener('change', _onLeafMQ);
+  else if (_leafFieldMQ.addListener) _leafFieldMQ.addListener(_onLeafMQ);
+  window.addEventListener('orientationchange', _onLeafMQ);
+
   // ── Wind cone — gentle, mostly omnidirectional puff with a slight
   //    forward boost so cursor movement still has direction. Soft. ──
   // Cursor "leaf blower" strength. Bumped from 380/280 → 480/520 so
@@ -8769,7 +8781,10 @@
       // breeze, weather wind, and random gusts so the click reads as
       // "pluck a leaf and let it fall straight down". Cursor wind above
       // still applies, so the leaf blower works on them too.
-      if (!this.pureGravity) {
+      // Mobile/tablet: skip every wind source here — leaves only respond
+      // to gravity + the tilt-driven wind layered on by the wrapper at
+      // the bottom of this script. The phone is the wind on small screens.
+      if (!this.pureGravity && !IS_MOBILE_FIELD) {
         const amb = ambientWindAt(this.x, this.y, t);
         this.vx += amb.x * AMBIENT_LEAF_GAIN_BASE * ambientMul * invM * dt;
         this.vy += amb.y * AMBIENT_LEAF_GAIN_BASE * ambientMul * invM * dt;
