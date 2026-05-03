@@ -33,7 +33,7 @@
 <link rel="preload" as="image" href="BULB TO FLOWER.png" fetchpriority="high">
 <style>
   :root {
-    --cream: #F2ECDC;
+    --cream: #E6DFC2;
     --cream-deep: #E6DCBE;
     --paper: #F7F2E5;
     --ink: #1B2418;
@@ -4250,7 +4250,7 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: #E6DFC2;
+    background: var(--cream);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -4321,6 +4321,7 @@
     background-repeat: no-repeat;
     background-size: 400% 100%;
     background-position: 0% 50%;
+    mix-blend-mode: multiply;
     pointer-events: none;
   }
   .mob-loader.visible .mob-bulb {
