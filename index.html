@@ -8147,10 +8147,10 @@
   // takes the page from 0 → ENTRY_TARGET in soft batches; only after that
   // does the watchdog take over.
   const _isMobileLeafPop = window.matchMedia('(max-width: 900px), (max-aspect-ratio: 4/5)').matches;
-  const MIN_LEAVES        = _isMobileLeafPop ? 140 : 75;
-  const TARGET_LEAVES     = _isMobileLeafPop ? 180 : 105;
-  const MAX_LEAVES        = _isMobileLeafPop ? 220 : 130;
-  const ENTRY_TARGET      = _isMobileLeafPop ? 200 : 120;
+  const MIN_LEAVES        = _isMobileLeafPop ? 90  : 75;
+  const TARGET_LEAVES     = _isMobileLeafPop ? 120 : 105;
+  const MAX_LEAVES        = _isMobileLeafPop ? 150 : 130;
+  const ENTRY_TARGET      = _isMobileLeafPop ? 135 : 120;
   const ESCAPE_MARGIN     = 120;
   const LEAF_SCALE_MIN    = 0.055;
   const LEAF_SCALE_MAX    = 0.095;
@@ -8294,7 +8294,10 @@
   // Canvas covers the full viewport (sibling of stage-shell). W/H are the
   // viewport pixel dimensions; the only "wall" is the screen edge.
   let W = innerWidth, H = innerHeight;
-  const dpr = window.devicePixelRatio || 1;
+  // Cap DPR at 2 on mobile — iPhone runs at 3, which triples fillrate cost
+  // for no perceptible quality gain on alpha-blended leaf silhouettes.
+  const _isMobileDpr = window.matchMedia('(max-width: 900px), (max-aspect-ratio: 4/5)').matches;
+  const dpr = Math.min(window.devicePixelRatio || 1, _isMobileDpr ? 2 : 3);
 
   function resize() {
     W = innerWidth;
@@ -9187,7 +9190,10 @@
     maybeEntrySpawn(now, dt);
     triggerEmergencyGust(now);
 
-    leafLeafCollisions();
+    // Skip the O(n²) leaf-leaf collision pass on mobile — it's the single
+    // biggest CPU sink and the visual difference (leaves stacking vs. lightly
+    // overlapping) is invisible at phone scale.
+    if (!IS_MOBILE_FIELD) leafLeafCollisions();
     for (const l of leaves) l.draw(ctx);
 
     requestAnimationFrame(tick);
