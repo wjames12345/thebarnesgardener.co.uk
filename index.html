@@ -8212,12 +8212,14 @@
   // gust fires and tops the count back up to TARGET. The entry sequence
   // takes the page from 0 → ENTRY_TARGET in soft batches; only after that
   // does the watchdog take over.
-  // Mobile uses the same population as desktop now that the per-leaf cost
-  // is cut (no multiply blend, no ambient-wind sampling).
-  const MIN_LEAVES        = 100;
-  const TARGET_LEAVES     = 135;
-  const MAX_LEAVES        = 160;
-  const ENTRY_TARGET      = 145;
+  // Mobile gets a much denser pile + heavier gravity so leaves rain down
+  // faster and fill the small canvas. Per-leaf cost is already trimmed on
+  // mobile (no multiply blend, no ambient sine, no leaf-leaf collisions),
+  // so the higher count fits the frame budget.
+  const MIN_LEAVES        = IS_MOBILE_FIELD ? 200 : 100;
+  const TARGET_LEAVES     = IS_MOBILE_FIELD ? 260 : 135;
+  const MAX_LEAVES        = IS_MOBILE_FIELD ? 310 : 160;
+  const ENTRY_TARGET      = IS_MOBILE_FIELD ? 280 : 145;
   const ESCAPE_MARGIN     = 120;
   const LEAF_SCALE_MIN    = 0.055;
   const LEAF_SCALE_MAX    = 0.095;
@@ -8238,7 +8240,9 @@
   // standing still against it; it arrives in gusts that briefly overcome
   // it, then leaves fall again. No constant updraft — that's not how
   // air works.
-  const LEAF_GRAVITY      = 160;
+  // Mobile: ~2.4× heavier so the dense pile rains down decisively rather
+  // than drifting lazily across a small canvas.
+  const LEAF_GRAVITY      = IS_MOBILE_FIELD ? 380 : 160;
 
   // ── Ground physics — leaves rest at the bottom and visually flatten ──
   // GROUND_INSET sets where the floor sits (px above the very bottom).
