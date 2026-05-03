@@ -4204,6 +4204,18 @@
     body.blog-popup-open .ios-popup.visible {
       transform: translateY(0) scale(1);
     }
+    /* Phones don't have a hovering cursor — kill the radial lens and let
+       the veil blur uniformly across the page. */
+    .blog-blur-veil {
+      -webkit-mask-image: none;
+              mask-image: none;
+    }
+    /* Keep the hamburger and the page back-arrow above the blur veil so
+       the user can always close the page or open the menu. */
+    body.blog-popup-open .mob-menu-toggle,
+    body.blog-popup-open #m-blog .mob-page-back {
+      z-index: 1600;
+    }
   }
 
   /* ─── MOBILE LOADER — constellation of nodes around the bulb ─── */
@@ -5609,7 +5621,7 @@
         <div class="page-inner">
           <div class="blog-head fade-in" style="--fade-delay: 0.0s;">
             <h2>What's Growing</h2>
-            <p class="blog-lead">Notes from the garden, the riverbank and the workshop. A working journal of what's in season, what's earning its place, and the odd vintage rod or reel that finds its way home.</p>
+            <p class="blog-lead">Notes from the garden. A working journal of what's in season, what's earning its place, and the odd vintage rod or reel that finds its way home.</p>
           </div>
 
           <div class="post-grid fade-in" style="--fade-delay: 0.18s;">
@@ -6187,7 +6199,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <h2>What's Growing.</h2>
-    <p class="lead">Notes from the garden, the riverbank and the workshop.</p>
+    <p class="lead">Notes from the garden.</p>
 
     <div class="mob-post-list">
 
@@ -7412,7 +7424,7 @@
     let previouslyFocused = null;
 
     function showPopup() {
-      if (sessionStorage.getItem(STORAGE_KEY) === '1') return;
+      // Always show on every blog visit — no session suppression.
       // Cancel any in-flight fade-out so a fresh open isn't undone by it.
       clearTimeout(hideTimer); hideTimer = null;
       if (veil) veil.style.opacity = '';
