@@ -5303,9 +5303,6 @@
     overscroll-behavior-y: contain;
     -webkit-tap-highlight-color: transparent;
   }
-  /* Custom property used by JS to expose the deviceorientation permission
-     state — could light up a "tap to enable" hint in future if we want. */
-
   /* Subtle link underline that grows from the left on hover (case
      content + post excerpts already use other treatments — this targets
      in-prose anchors without an explicit class). */
@@ -8107,10 +8104,8 @@
   const ctx = canvas.getContext('2d');
 
   // ── Mobile field flag ──
-  // On mobile/tablet the only force on leaves besides gravity is device tilt.
-  // No ambient breeze, weather drift, periodic gusts, big sweeps, or
-  // ground-skimming gusts. Recomputed on viewport changes so a desktop
-  // window resize / orientation flip swaps modes correctly.
+  // Tracked for perf gating only (DPR cap, leaf-leaf collision skip).
+  // Wind sources are identical to desktop.
   const _leafFieldMQ = window.matchMedia('(max-width: 900px), (max-aspect-ratio: 4/5)');
   let IS_MOBILE_FIELD = _leafFieldMQ.matches;
   const _onLeafMQ = () => { IS_MOBILE_FIELD = _leafFieldMQ.matches; };
@@ -8146,11 +8141,10 @@
   // gust fires and tops the count back up to TARGET. The entry sequence
   // takes the page from 0 → ENTRY_TARGET in soft batches; only after that
   // does the watchdog take over.
-  const _isMobileLeafPop = window.matchMedia('(max-width: 900px), (max-aspect-ratio: 4/5)').matches;
-  const MIN_LEAVES        = _isMobileLeafPop ? 60  : 75;
-  const TARGET_LEAVES     = _isMobileLeafPop ? 85  : 105;
-  const MAX_LEAVES        = _isMobileLeafPop ? 110 : 130;
-  const ENTRY_TARGET      = _isMobileLeafPop ? 100 : 120;
+  const MIN_LEAVES        = 75;
+  const TARGET_LEAVES     = 105;
+  const MAX_LEAVES        = 130;
+  const ENTRY_TARGET      = 120;
   const ESCAPE_MARGIN     = 120;
   const LEAF_SCALE_MIN    = 0.055;
   const LEAF_SCALE_MAX    = 0.095;
@@ -8473,9 +8467,8 @@
     return { fx: ndx * magnitude, fy: ndy * magnitude };
   }
 
-  // (Tilt + shake + pull-to-refresh wind are wired up further down — see
-  // the "DEVICE WIND" section near the bottom of this script. tiltWindX /
-  // tiltWindY are added directly to each leaf's velocity in update().)
+  // (Shake + pull-to-refresh gusts are wired up further down — see the
+  // MOBILE SENSORY LAYER block near the bottom of this script.)
 
   // ── Continuous weather wind state ──
   let weatherAngle       = Math.random() * Math.PI * 2;
@@ -8806,10 +8799,7 @@
       // breeze, weather wind, and random gusts so the click reads as
       // "pluck a leaf and let it fall straight down". Cursor wind above
       // still applies, so the leaf blower works on them too.
-      // Mobile/tablet: skip every wind source here — leaves only respond
-      // to gravity + the tilt-driven wind layered on by the wrapper at
-      // the bottom of this script. The phone is the wind on small screens.
-      if (!this.pureGravity && !IS_MOBILE_FIELD) {
+      if (!this.pureGravity) {
         const amb = ambientWindAt(this.x, this.y, t);
         this.vx += amb.x * AMBIENT_LEAF_GAIN_BASE * ambientMul * invM * dt;
         this.vy += amb.y * AMBIENT_LEAF_GAIN_BASE * ambientMul * invM * dt;
@@ -9120,16 +9110,7 @@
 
   let lastT = performance.now();
   let uiRefreshT = 0;
-  // FPS cap on mobile — 60fps doubles physics + draw cost for no perceptible
-  // gain on drifting leaves. 30fps still feels smooth and frees the GPU.
-  const FRAME_BUDGET_MS = IS_MOBILE_FIELD ? 33 : 0;
-  let lastFrameT = 0;
   function tick(now) {
-    if (FRAME_BUDGET_MS && now - lastFrameT < FRAME_BUDGET_MS) {
-      requestAnimationFrame(tick);
-      return;
-    }
-    lastFrameT = now;
     let dt = (now - lastT) / 1000;
     if (dt > 0.05) dt = 0.05;
     lastT = now;
@@ -9212,131 +9193,10 @@
   init();
 
   // ════════════════════════════════════════════════════════════════════════
-  // MOBILE SENSORY LAYER — tilt, shake, pull-to-refresh, haptics
-  // Pure no-op on desktop (events never fire). On iOS 13+ the orientation/
-  // motion APIs need explicit permission, granted via the first user tap.
+  // MOBILE SENSORY LAYER — shake, pull-to-refresh, haptics
+  // Pure no-op on desktop (events never fire). On iOS 13+ the motion API
+  // needs explicit permission, granted via the first user tap.
   // ════════════════════════════════════════════════════════════════════════
-
-  // ── Tilt-driven device wind ──
-  // gamma  = left/right tilt (-90..90), beta = front/back tilt (-180..180).
-  // We map small tilts to a prevailing wind that's added to the leaf
-  // physics each frame. Smoothed so micro-jitter doesn't shake the field.
-  const TILT_RANGE_DEG = 15;     // anything past this clamps to max — small tilts already feel
-  const TILT_MAX_FORCE = 520;    // px/s² of acceleration at full tilt — has to overpower gravity (160) AND ground friction
-  const TILT_LERP      = 0.22;
-  // Reference beta — the angle the phone is at when held upright. Calibrates
-  // on first reading so the user's natural hold position is "no tilt", not
-  // "permanent forward wind".
-  let tiltBetaRef = null;
-  let tiltWindX = 0, tiltWindY = 0;
-  let tiltTargetX = 0, tiltTargetY = 0;
-  function handleOrientation(e) {
-    if (e.gamma == null || e.beta == null) return;
-    if (tiltBetaRef == null) tiltBetaRef = e.beta;
-    const gx = Math.max(-TILT_RANGE_DEG, Math.min(TILT_RANGE_DEG, e.gamma));
-    const gy = Math.max(-TILT_RANGE_DEG, Math.min(TILT_RANGE_DEG, e.beta - tiltBetaRef));
-    tiltTargetX = (gx / TILT_RANGE_DEG) * TILT_MAX_FORCE;
-    tiltTargetY = (gy / TILT_RANGE_DEG) * TILT_MAX_FORCE;
-  }
-  function updateTiltWind() {
-    tiltWindX += (tiltTargetX - tiltWindX) * TILT_LERP;
-    tiltWindY += (tiltTargetY - tiltWindY) * TILT_LERP;
-  }
-
-  // ── iOS permission prompt — site-styled overlay ─────────────────────────
-  // iOS 13+ requires a user gesture INSIDE a click handler that directly
-  // calls requestPermission. Auto-firing on every tap is unreliable, so
-  // give the user an explicit, on-brand "Enable motion" button instead.
-  function buildTiltPermissionPrompt() {
-    const needsPerm = typeof DeviceOrientationEvent !== 'undefined' &&
-                      typeof DeviceOrientationEvent.requestPermission === 'function';
-    if (!needsPerm || !IS_MOBILE_FIELD || sensorsAttached) return;
-
-    const overlay = document.createElement('div');
-    overlay.id = 'tiltPermOverlay';
-    overlay.style.cssText =
-      'position:fixed;inset:0;z-index:100000;' +
-      'display:flex;align-items:center;justify-content:center;' +
-      'background:rgba(46,64,48,0.55);backdrop-filter:blur(6px);' +
-      '-webkit-backdrop-filter:blur(6px);padding:24px;';
-
-    const card = document.createElement('div');
-    card.style.cssText =
-      'max-width:340px;width:100%;background:#F2ECDC;' +
-      'border:1px solid rgba(47,64,48,0.18);border-radius:14px;' +
-      'padding:28px 24px 22px;text-align:center;color:#2F4030;' +
-      'box-shadow:0 18px 50px rgba(26,36,25,0.28);';
-
-    const h = document.createElement('div');
-    h.textContent = 'Tilt the leaves';
-    h.style.cssText =
-      "font-family:'Fraunces',Georgia,serif;font-size:26px;line-height:1.1;" +
-      'font-weight:500;margin:0 0 10px;';
-
-    const p = document.createElement('div');
-    p.textContent = 'Allow motion access so the falling leaves drift with the way you hold your phone.';
-    p.style.cssText =
-      "font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45;" +
-      'color:#2F4030;opacity:0.82;margin:0 0 20px;';
-
-    const btn = document.createElement('button');
-    btn.textContent = 'Enable motion';
-    btn.style.cssText =
-      "font-family:'DM Sans',system-ui,sans-serif;font-size:14px;letter-spacing:0.04em;" +
-      'text-transform:uppercase;font-weight:600;' +
-      'background:#2F4030;color:#F2ECDC;border:0;border-radius:999px;' +
-      'padding:12px 26px;cursor:pointer;-webkit-tap-highlight-color:transparent;';
-
-    const skip = document.createElement('button');
-    skip.textContent = 'Not now';
-    skip.style.cssText =
-      "font-family:'DM Sans',system-ui,sans-serif;font-size:13px;" +
-      'background:transparent;color:#2F4030;opacity:0.6;border:0;' +
-      'margin-top:14px;padding:6px;cursor:pointer;display:block;width:100%;' +
-      '-webkit-tap-highlight-color:transparent;';
-
-    card.appendChild(h);
-    card.appendChild(p);
-    card.appendChild(btn);
-    card.appendChild(skip);
-    overlay.appendChild(card);
-
-    function dismiss() { overlay.remove(); }
-
-    btn.addEventListener('click', async () => {
-      btn.disabled = true;
-      btn.textContent = 'Enabling…';
-      try {
-        const r = await DeviceOrientationEvent.requestPermission();
-        if (r === 'granted') {
-          attachSensors();
-          if (typeof DeviceMotionEvent !== 'undefined' &&
-              typeof DeviceMotionEvent.requestPermission === 'function') {
-            try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
-          }
-          dismiss();
-        } else {
-          btn.disabled = false;
-          btn.textContent = 'Enable motion';
-          p.textContent = 'Permission was declined. Open Safari → Settings → Motion & Orientation Access to allow it.';
-        }
-      } catch (err) {
-        btn.disabled = false;
-        btn.textContent = 'Enable motion';
-      }
-    });
-
-    skip.addEventListener('click', dismiss);
-
-    document.body.appendChild(overlay);
-  }
-  // Show after first paint so it doesn't flash before the cream background.
-  if (document.readyState === 'complete') {
-    setTimeout(buildTiltPermissionPrompt, 600);
-  } else {
-    window.addEventListener('load', () => setTimeout(buildTiltPermissionPrompt, 600));
-  }
-  // ── END iOS permission prompt ────────────────────────────────────────────
 
   // ── Shake detection ──
   // Track the change in accelerationIncludingGravity each event; a sharp
@@ -9379,7 +9239,6 @@
   function attachSensors() {
     if (sensorsAttached) return;
     sensorsAttached = true;
-    window.addEventListener('deviceorientation', handleOrientation);
     window.addEventListener('devicemotion', handleMotion);
   }
   async function enableMotionSensors() {
@@ -9454,41 +9313,6 @@
     )) return;
     navigator.vibrate(10);
   });
-
-  // ── Hook tilt wind into the simulation each frame ──
-  // Wrap the existing weather-update so the tilt smoothing happens at the
-  // same cadence and tilt force is folded into the per-leaf wind.
-  const _origUpdateWeather = updateWeather;
-  updateWeather = function (now, dt) {
-    _origUpdateWeather(now, dt);
-    updateTiltWind();
-  };
-  // Patch every Leaf's update to add tilt wind to its velocity.
-  // pureGravity leaves (click-spawned) opt out so they fall straight down.
-  // When the user tilts past a threshold we also lift grounded leaves a
-  // touch and skip the rest-speed cap so the pile actually pours sideways
-  // rather than being pinned by ground friction.
-  const TILT_LIFT_THRESHOLD = 60;     // px/s² — above this, treat as an active tilt
-  const TILT_GROUND_LIFT    = 90;     // upward kick for resting leaves while tilting
-  const _origLeafUpdate = Leaf.prototype.update;
-  Leaf.prototype.update = function (dt, t, ambientMul) {
-    _origLeafUpdate.call(this, dt, t, ambientMul);
-    if (this.pureGravity) return;
-    const tiltMag = Math.hypot(tiltWindX, tiltWindY);
-    this.vx += tiltWindX * dt;
-    this.vy += tiltWindY * dt;
-    if (tiltMag > TILT_LIFT_THRESHOLD) {
-      const groundY = H - GROUND_INSET;
-      if (this.y >= groundY - 2) {
-        this.vy -= TILT_GROUND_LIFT * dt * (tiltMag / TILT_MAX_FORCE);
-      }
-      // Wake the leaf so the rest-speed cap stops smothering tilt motion.
-      if (Math.hypot(this.vx, this.vy) < LEAF_REST_SPEED * 1.6) {
-        const dir = tiltWindX >= 0 ? 1 : -1;
-        this.vx += dir * LEAF_REST_SPEED * 1.8;
-      }
-    }
-  };
 
   // ── Haptics on big horizontal sweeps ──
   // Wrap maybeStartBigGust so a big sweep also triggers a longer buzz.
