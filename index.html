@@ -3545,6 +3545,37 @@
   #m-contact .mob-contact-row * { font-style: normal; }
 
   /* Back chevron — top-left of every page, returns to home */
+  /* ─── Mobile brand mark — small swan-and-leaves logo at the top of every
+         non-home mobile page. Tapping returns to home (uses the existing
+         data-mob-back routing). Hidden on home where the big wordmark
+         already brands the page. ─── */
+  .mob-brand {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 64px;
+    height: 52px;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: var(--moss);
+    cursor: pointer;
+    z-index: 6;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.25s var(--ease), opacity 0.2s var(--ease);
+  }
+  .mob-brand svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+  .mob-brand:active { transform: translateX(-50%) scale(0.94); opacity: 0.75; }
+  /* Hide the brand on home (wordmark covers it). */
+  body[data-mob-page="home"] .mob-brand { display: none; }
+  /* Push the back arrow down a touch so it sits beneath the centred brand
+     visually balanced rather than competing for the same horizontal axis. */
   .mob-page-back {
     position: absolute;
     top: 26px;
@@ -6046,6 +6077,46 @@
      MOBILE FALLBACK (separate scrollable layout, hidden on desktop)
      ═════════════════════════════════════════════════════════════════════ -->
 <div class="mobile-shell">
+
+  <!-- Brand mark — small swan + leaves logo at the top of every non-home
+       mobile page. Reuses data-mob-back so the existing handler routes the
+       user to home (loader + page swap). Hidden on home via CSS. -->
+  <button class="mob-brand" type="button" data-mob-back aria-label="Home">
+    <svg viewBox="0 0 100 80" fill="none" stroke="currentColor"
+         stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+         aria-hidden="true">
+      <!-- Three leaves on the upper-left, fanning back -->
+      <path d="M 20 30 Q 8 24 6 12 Q 16 14 22 22 Q 24 27 22 32 Z"/>
+      <path d="M 22 22 Q 22 17 23 12"/>
+      <path d="M 32 26 Q 22 18 24 6 Q 34 10 38 20 Q 38 25 34 28 Z"/>
+      <path d="M 32 16 Q 31 14 30 10"/>
+      <path d="M 44 30 Q 38 20 44 8 Q 52 14 52 24 Q 50 30 46 31 Z"/>
+      <path d="M 47 26 Q 47 22 48 16"/>
+      <!-- Swan body — broad horizontal curve, flicked tail at the back -->
+      <path d="M 18 56
+               Q 14 52 16 47
+               Q 22 44 32 45
+               Q 50 47 68 52
+               Q 78 55 80 60
+               Q 76 64 60 64
+               Q 38 65 22 62
+               Q 17 60 18 56 Z"/>
+      <!-- Wing detail -->
+      <path d="M 32 50 Q 44 47 56 52"/>
+      <!-- Neck rising from the breast, curving forward -->
+      <path d="M 70 52
+               Q 86 46 86 30
+               Q 86 18 78 14"/>
+      <!-- Head + beak -->
+      <path d="M 78 14
+               Q 70 12 70 18
+               Q 70 22 76 22
+               Q 80 22 80 19"/>
+      <path d="M 70 17 L 64 19 L 70 20"/>
+      <!-- Eye -->
+      <circle cx="74" cy="17" r="0.8" fill="currentColor" stroke="none"/>
+    </svg>
+  </button>
 
   <!-- Hamburger toggle — sits top-right on every mobile screen. Tap to fade
        the page to the cream background and reveal the all-caps overlay
