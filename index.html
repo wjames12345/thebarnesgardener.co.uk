@@ -8181,10 +8181,13 @@
   // faster and fill the small canvas. Per-leaf cost is already trimmed on
   // mobile (no multiply blend, no ambient sine, no leaf-leaf collisions),
   // so the higher count fits the frame budget.
-  const MIN_LEAVES        = IS_MOBILE_FIELD ? 200 : 100;
-  const TARGET_LEAVES     = IS_MOBILE_FIELD ? 260 : 135;
-  const MAX_LEAVES        = IS_MOBILE_FIELD ? 310 : 160;
-  const ENTRY_TARGET      = IS_MOBILE_FIELD ? 280 : 145;
+  // Mobile counts trimmed: walls now keep leaves on-page (no blow-off
+  // attrition) so the high counts that compensated are no longer needed.
+  // Lighter pile = more frame budget for realistic flutter physics.
+  const MIN_LEAVES        = IS_MOBILE_FIELD ? 80  : 100;
+  const TARGET_LEAVES     = IS_MOBILE_FIELD ? 110 : 135;
+  const MAX_LEAVES        = IS_MOBILE_FIELD ? 140 : 160;
+  const ENTRY_TARGET      = IS_MOBILE_FIELD ? 120 : 145;
   const ESCAPE_MARGIN     = 120;
   const LEAF_SCALE_MIN    = 0.055;
   const LEAF_SCALE_MAX    = 0.095;
@@ -8205,9 +8208,12 @@
   // standing still against it; it arrives in gusts that briefly overcome
   // it, then leaves fall again. No constant updraft — that's not how
   // air works.
-  // Mobile: ~2.4× heavier so the dense pile rains down decisively rather
-  // than drifting lazily across a small canvas.
-  const LEAF_GRAVITY      = IS_MOBILE_FIELD ? 380 : 160;
+  // Mobile gravity matches desktop now — the previous 2.4× boost was
+  // there to push the high mobile pile down faster, but it produced a
+  // streaky "rain" effect rather than realistic falling-leaf physics.
+  // With the trimmed mobile counts and added flutter, normal gravity
+  // gives a believable terminal velocity (~73 px/s).
+  const LEAF_GRAVITY      = 160;
 
   // ── Ground physics — leaves rest at the bottom and visually flatten ──
   // GROUND_INSET sets where the floor sits (px above the very bottom).
@@ -8326,6 +8332,11 @@
     // 3 — flower (Screenshot copy) — pinkish/cream
     ['#c98591', '#a37a6a', '#8a5a4a', '#b09a8a', '#9a6a7a'],
   ];
+
+  // Mobile palette — single moss green (with tight tonal variation so the
+  // pile doesn't read as a flat sticker). Replaces the per-species autumn
+  // palettes on phones so every leaf reads as one species.
+  const MOSS_PALETTE = ['#2F4030', '#374A35', '#28391F', '#3F5640', '#1F2E1F'];
 
   // Canvas covers the full viewport (sibling of stage-shell). W/H are the
   // viewport pixel dimensions; the only "wall" is the screen edge.
@@ -8774,7 +8785,11 @@
   class Leaf {
     constructor(speciesIdx) {
       this.species = speciesIdx;
-      const palette = SPECIES_PALETTES[speciesIdx % SPECIES_PALETTES.length];
+      // Mobile uses the single moss palette — every leaf reads as one
+      // species. Desktop keeps the per-species autumn variety.
+      const palette = IS_MOBILE_FIELD
+        ? MOSS_PALETTE
+        : SPECIES_PALETTES[speciesIdx % SPECIES_PALETTES.length];
       this.color = palette[Math.floor(Math.random() * palette.length)];
       // Image may not be loaded yet — attach lazily. Until then we use
       // placeholder dimensions so physics/collisions still work.
@@ -8807,6 +8822,12 @@
       this.flipPhase = Math.random() * Math.PI * 2;
       this.flipRate  = FLIP_RATE_MIN +
                        Math.random() * (FLIP_RATE_MAX - FLIP_RATE_MIN);
+      // Per-leaf flutter — sideways oscillation as the leaf falls. Each
+      // leaf has its own phase + rate so the pile reads as many leaves
+      // doing their own thing rather than one synchronised swarm.
+      // Period ~0.5–1.0s = real falling-leaf bob frequency.
+      this.flutterOffset = Math.random() * Math.PI * 2;
+      this.flutterRate   = 6 + Math.random() * 5;
       // 0..1 — how "flat on the ground" the leaf is. Ramps up while resting
       // at the floor, ramps down if it gets blown back up by wind.
       this.groundT = 0;
@@ -8873,6 +8894,15 @@
             this.vy -= GROUND_GUST_LIFT * factor * dt;
           }
         }
+
+        // Mobile flutter — sideways oscillation that gives leaves the
+        // characteristic "swaying as they fall" motion. Cheaper than the
+        // 6-trig ambient sine field (which is skipped on mobile) but
+        // perceptually does most of the same work. Skipped once the leaf
+        // settles on the ground so it doesn't twitch in place.
+        if (IS_MOBILE_FIELD && this.groundT < 0.5) {
+          this.vx += Math.sin(t * this.flutterRate + this.flutterOffset) * 28 * dt;
+        }
       }
 
       // Gravity — applied every frame for every leaf, never cancelled.
@@ -8906,9 +8936,35 @@
         this.groundT *= Math.exp(-3 * dt);
       }
 
-      // Page edges are open — leaves blow off-screen and get despawned by
-      // the tick loop. UI rect collisions stay so leaves still bounce off
-      // the logo, sidenav and footer.
+      // ── Mobile walls — page edges are now solid on phones so leaves
+      //    can't escape the canvas. Only enforced when the leaf is
+      //    heading OUT (vx/vy points outward), so spawn-from-edge entry
+      //    still passes through cleanly. Soft bounce + friction so the
+      //    motion stays organic, not like a billiard ball.
+      if (IS_MOBILE_FIELD) {
+        const wr = Math.max(this.imgW, this.imgH) * this.scale * 0.18;
+        if (this.x < wr && this.vx < 0) {
+          this.x = wr;
+          this.vx = -this.vx * WALL_RESTITUTION;
+          this.vy *= (1 - WALL_FRICTION);
+          this.av += (Math.random() - 0.5) * 1.0;
+        } else if (this.x > W - wr && this.vx > 0) {
+          this.x = W - wr;
+          this.vx = -this.vx * WALL_RESTITUTION;
+          this.vy *= (1 - WALL_FRICTION);
+          this.av += (Math.random() - 0.5) * 1.0;
+        }
+        if (this.y < wr && this.vy < 0) {
+          this.y = wr;
+          this.vy = -this.vy * WALL_RESTITUTION;
+          this.vx *= (1 - WALL_FRICTION);
+          this.av += (Math.random() - 0.5) * 1.0;
+        }
+      }
+
+      // Page edges are open on desktop — leaves blow off-screen and get
+      // despawned by the tick loop. UI rect collisions stay so leaves
+      // still bounce off the logo, sidenav and footer.
       const r = this.radius;
       for (const u of uiRects) {
         const cx = Math.max(u.x, Math.min(this.x, u.x + u.w));
@@ -9141,7 +9197,10 @@
 
     // Background upgrade — process crisper silhouettes off the critical
     // path. New leaves spawned after this completes use the upgraded
-    // (line-art) silhouettes.
+    // (line-art) silhouettes. Existing leaves get re-tinted in place so
+    // mobile's moss palette applies from the moment processing finishes
+    // (otherwise the kickoff burst would hold raw photo colours until
+    // each leaf naturally got recycled).
     const upgrade = () => {
       for (let i = 0; i < ids.length; i++) {
         const img = document.getElementById(ids[i]);
@@ -9150,8 +9209,27 @@
         if (sil && sil.processed) leafImages[i] = sil;
         else if (sil && !leafImages[i]) leafImages[i] = sil;
       }
+      // Re-tint any leaves already on the page so they pick up the
+      // processed silhouette (and on mobile, the moss palette) instead
+      // of waiting to be recycled.
+      for (const l of leaves) {
+        const sil = leafImages[l.species];
+        if (!sil) continue;
+        l.img = tintSilhouette(sil, l.color);
+        l.imgW = sil.w;
+        l.imgH = sil.h;
+        l.usesMultiply = !sil.processed;
+      }
     };
-    if (typeof requestIdleCallback === 'function') {
+    // Mobile: run the upgrade synchronously so the kickoff leaves render
+    // moss-tinted on the first paint instead of flashing raw photo
+    // colours for ~100ms (mobile skips multiply blend, so raw silhouettes
+    // would show as full-colour leaf photos until processing landed).
+    // Desktop keeps the idle-time path — its multiply-blend rendering of
+    // raw silhouettes already looks tinted, so there's no flash.
+    if (IS_MOBILE_FIELD) {
+      upgrade();
+    } else if (typeof requestIdleCallback === 'function') {
       requestIdleCallback(upgrade, { timeout: 2000 });
     } else {
       setTimeout(upgrade, 250);
