@@ -4237,12 +4237,12 @@
     }
   }
 
-  /* ─── MOBILE LOADER — thin circle with bulb growing inside ─── */
+  /* ─── MOBILE LOADER — thin Apple-style ring with bulb flipbook inside ─── */
   .mob-loader {
     display: none;
     position: fixed;
     inset: 0;
-    background: var(--cream);
+    background: var(--cream-deep);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -4257,15 +4257,15 @@
     opacity: 1;
     pointer-events: auto;
   }
-  /* Compact stage — a small circle, bulb stop-motion grows inside. */
+  /* Compact stage — small circle, bulb stop-motion grows inside. */
   .mob-stage {
     position: relative;
-    width: 120px;
-    height: 120px;
+    width: 132px;
+    height: 132px;
   }
 
-  /* Thin moss line forming the circle. A faint full track plus a short
-     arc that travels around it gives the loader some life without noise. */
+  /* Hairline moss ring. Faint full track + a quarter-arc that rotates
+     gives the loader life without visual noise — iOS-spinner feel. */
   .mob-ring {
     position: absolute;
     inset: 0;
@@ -4277,64 +4277,67 @@
   .mob-ring__track {
     fill: none;
     stroke: var(--moss);
-    stroke-opacity: 0.2;
-    stroke-width: 1.2;
+    stroke-opacity: 0.14;
+    stroke-width: 1;
   }
   .mob-ring__arc {
     fill: none;
     stroke: var(--moss);
-    stroke-width: 1.2;
+    stroke-width: 1;
     stroke-linecap: round;
     transform-origin: 50% 50%;
+    transform: rotate(-90deg);
   }
   .mob-loader.visible .mob-ring__arc {
-    animation: ringTravel 1.8s linear infinite;
+    animation: ringTravel 1.2s linear infinite;
   }
   @keyframes ringTravel {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+    from { transform: rotate(-90deg); }
+    to   { transform: rotate(270deg); }
   }
 
-  /* Centre bulb — single growing form, all 4 stages flash IN PLACE.
-     Each <img> is the full composite, scaled large and translated so its
-     own quarter falls dead-centre of .mob-bulb. clip-path then hides the
-     other three quarters. Result: bulbs grow without sliding. */
+  /* Centre bulb — single sprite, background-position flipbook between the
+     four stages of the BULB TO FLOWER composite. Hard-cut snaps so growth
+     reads as stop motion, not a blur of overlapping fades. Container is
+     sized to one stage's aspect (640×1664 ≈ 100/260) so the bulb sits at
+     a natural proportion inside the ring. */
   .mob-bulb {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 56px;
-    aspect-ratio: 100 / 130;
+    width: 42px;
+    height: 109px;
     transform: translate(-50%, -50%);
-  }
-  .mob-bulb img {
-    position: absolute;
-    bottom: 0;
-    width: 400%;
-    height: auto;
-    opacity: 0;
+    background-image: url('BULB TO FLOWER transparent.png');
+    background-repeat: no-repeat;
+    background-size: 400% 100%;
+    background-position: 0% 50%;
     pointer-events: none;
   }
-  .mob-bulb img:nth-child(1) { left:    0%; clip-path: inset(0 75%  0 0);   }
-  .mob-bulb img:nth-child(2) { left: -100%; clip-path: inset(0 50%  0 25%); }
-  .mob-bulb img:nth-child(3) { left: -200%; clip-path: inset(0 25%  0 50%); }
-  .mob-bulb img:nth-child(4) { left: -300%; clip-path: inset(0 0    0 75%); }
-  .mob-loader.visible .mob-bulb img {
-    animation: bulbFlash 0.55s ease-in-out forwards;
-    animation-delay: calc(var(--i) * 0.15s);
+  .mob-loader.visible .mob-bulb {
+    animation: mobBulbFlipbook 1.04s infinite;
+  }
+  @keyframes mobBulbFlipbook {
+    0%,  24.9% { background-position: 0%      50%; }
+    25%, 49.9% { background-position: 33.333% 50%; }
+    50%, 74.9% { background-position: 66.667% 50%; }
+    75%, 100%  { background-position: 100%    50%; }
   }
 
-  /* Reduced motion: ring still, bulb settles on final frame. */
+  /* Reduced motion: ring still at top, bulb settles on the final (bloomed) frame. */
   @media (prefers-reduced-motion: reduce) {
     .mob-loader.visible .mob-ring__arc,
-    .mob-loader.visible .mob-bulb img,
+    .mob-loader.visible .mob-bulb,
     .mob-hero-title .lc,
     .mob-list-nav {
       animation: none !important;
-      opacity: 1 !important;
-      transform: none !important;
     }
-    .mob-loader.visible .mob-bulb img:nth-child(-n+3) { opacity: 0 !important; }
+    .mob-loader.visible .mob-ring__arc {
+      transform: rotate(-90deg) !important;
+    }
+    .mob-loader.visible .mob-bulb {
+      background-position: 100% 50% !important;
+    }
   }
 
   /* ─── SERVICES PAGE: 2-up grid of square cards, tap for popup ─── */
@@ -6382,18 +6385,13 @@
 <!-- Mobile loader — thin moss circle with the bulb stop-motion growing inside -->
 <div class="mob-loader" id="mobLoader" aria-hidden="true">
   <div class="mob-stage">
-    <svg class="mob-ring" viewBox="0 0 120 120" aria-hidden="true">
-      <circle class="mob-ring__track" cx="60" cy="60" r="54"></circle>
-      <circle class="mob-ring__arc"   cx="60" cy="60" r="54"
-              stroke-dasharray="70 270"></circle>
+    <svg class="mob-ring" viewBox="0 0 132 132" aria-hidden="true">
+      <circle class="mob-ring__track" cx="66" cy="66" r="60"></circle>
+      <circle class="mob-ring__arc"   cx="66" cy="66" r="60"
+              stroke-dasharray="95 282"></circle>
     </svg>
 
-    <div class="mob-bulb">
-      <img src="BULB TO FLOWER transparent.png" alt="" style="--i: 0">
-      <img src="BULB TO FLOWER transparent.png" alt="" style="--i: 1">
-      <img src="BULB TO FLOWER transparent.png" alt="" style="--i: 2">
-      <img src="BULB TO FLOWER transparent.png" alt="" style="--i: 3">
-    </div>
+    <div class="mob-bulb" role="img" aria-label="Bulb growing into flower"></div>
   </div>
 </div>
 
