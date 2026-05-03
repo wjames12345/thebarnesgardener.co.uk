@@ -8147,10 +8147,10 @@
   // takes the page from 0 → ENTRY_TARGET in soft batches; only after that
   // does the watchdog take over.
   const _isMobileLeafPop = window.matchMedia('(max-width: 900px), (max-aspect-ratio: 4/5)').matches;
-  const MIN_LEAVES        = _isMobileLeafPop ? 90  : 75;
-  const TARGET_LEAVES     = _isMobileLeafPop ? 120 : 105;
-  const MAX_LEAVES        = _isMobileLeafPop ? 150 : 130;
-  const ENTRY_TARGET      = _isMobileLeafPop ? 135 : 120;
+  const MIN_LEAVES        = _isMobileLeafPop ? 60  : 75;
+  const TARGET_LEAVES     = _isMobileLeafPop ? 85  : 105;
+  const MAX_LEAVES        = _isMobileLeafPop ? 110 : 130;
+  const ENTRY_TARGET      = _isMobileLeafPop ? 100 : 120;
   const ESCAPE_MARGIN     = 120;
   const LEAF_SCALE_MIN    = 0.055;
   const LEAF_SCALE_MAX    = 0.095;
@@ -9120,7 +9120,16 @@
 
   let lastT = performance.now();
   let uiRefreshT = 0;
+  // FPS cap on mobile — 60fps doubles physics + draw cost for no perceptible
+  // gain on drifting leaves. 30fps still feels smooth and frees the GPU.
+  const FRAME_BUDGET_MS = IS_MOBILE_FIELD ? 33 : 0;
+  let lastFrameT = 0;
   function tick(now) {
+    if (FRAME_BUDGET_MS && now - lastFrameT < FRAME_BUDGET_MS) {
+      requestAnimationFrame(tick);
+      return;
+    }
+    lastFrameT = now;
     let dt = (now - lastT) / 1000;
     if (dt > 0.05) dt = 0.05;
     lastT = now;
