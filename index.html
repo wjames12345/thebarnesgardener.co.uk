@@ -3414,13 +3414,16 @@
 
   /* ─── CONTACT — editorial directory: hairline-divided rows, micro-uppercase
      labels, no italics anywhere. Each row is a tap target. Sized to fit
-     a single phone viewport with no scroll — flex distributes space. ─── */
+     a single phone viewport with no scroll — flex distributes space.
+     We don't set `display` here — the page-visibility rule below
+     (`body[data-mob-page="contact"] #m-contact.mob-section`) flips it
+     to `flex` only when contact is the active page; on every other page
+     the base `.mob-section { display: none }` keeps it hidden. ─── */
   #m-contact {
     padding-top: max(76px, env(safe-area-inset-top));
     padding-bottom: max(28px, env(safe-area-inset-bottom));
     height: 100svh;
     min-height: 100svh;
-    display: flex;
     flex-direction: column;
     overflow: hidden;
   }
@@ -4089,6 +4092,9 @@
     body[data-mob-page="blog"]      #m-blog,
     body[data-mob-page="podcast"]   #m-podcast,
     body[data-mob-page="shop"]      #m-shop { display: block; }
+    /* Contact uses a flex column to distribute its rows over the viewport
+       without scroll — keep the active-page selector but flip to flex. */
+    body[data-mob-page="contact"] #m-contact.mob-section { display: flex; }
 
     body[data-mob-page="generator"] .mob-hero,
     body[data-mob-page="about"]     .mob-hero,
