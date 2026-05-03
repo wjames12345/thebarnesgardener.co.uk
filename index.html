@@ -8896,11 +8896,10 @@
         }
 
         // Mobile flutter — sideways oscillation that gives leaves the
-        // characteristic "swaying as they fall" motion. Cheaper than the
-        // 6-trig ambient sine field (which is skipped on mobile) but
-        // perceptually does most of the same work. Skipped once the leaf
-        // settles on the ground so it doesn't twitch in place.
-        if (IS_MOBILE_FIELD && this.groundT < 0.5) {
+        // characteristic "swaying as they fall" motion. Always on (no
+        // groundT gate) so leaves caught at the bottom or in corners
+        // keep getting pushed sideways and don't settle.
+        if (IS_MOBILE_FIELD) {
           this.vx += Math.sin(t * this.flutterRate + this.flutterOffset) * 28 * dt;
         }
       }
@@ -8925,41 +8924,57 @@
       //    of the page. While resting, they slide with friction, stop
       //    spinning, and visually flatten via groundT (handled in draw). A
       //    strong upward force can still lift them off again. ──
-      const groundY = H - GROUND_INSET;
-      if (this.y >= groundY) {
-        this.y = groundY;
-        if (this.vy > 0) this.vy = 0;
-        this.vx *= Math.exp(-GROUND_FRICTION * dt);
-        this.av *= Math.exp(-GROUND_ROT_DAMP * dt);
-        this.groundT = Math.min(1, this.groundT + dt / GROUND_LAND_TIME);
-      } else {
-        this.groundT *= Math.exp(-3 * dt);
+      // Ground-resting physics — desktop only. On mobile the bottom is
+      // a wall (handled below), not a settling floor, so leaves never
+      // stack or stick.
+      if (!IS_MOBILE_FIELD) {
+        const groundY = H - GROUND_INSET;
+        if (this.y >= groundY) {
+          this.y = groundY;
+          if (this.vy > 0) this.vy = 0;
+          this.vx *= Math.exp(-GROUND_FRICTION * dt);
+          this.av *= Math.exp(-GROUND_ROT_DAMP * dt);
+          this.groundT = Math.min(1, this.groundT + dt / GROUND_LAND_TIME);
+        } else {
+          this.groundT *= Math.exp(-3 * dt);
+        }
       }
 
-      // ── Mobile walls — page edges are now solid on phones so leaves
-      //    can't escape the canvas. Only enforced when the leaf is
-      //    heading OUT (vx/vy points outward), so spawn-from-edge entry
-      //    still passes through cleanly. Soft bounce + friction so the
-      //    motion stays organic, not like a billiard ball.
+      // ── Mobile walls — all four page edges are solid on phones so
+      //    leaves can't escape the canvas. Only enforced when the leaf
+      //    is heading OUT (vx/vy points outward), so spawn-from-edge
+      //    entry still passes through cleanly. The wall-parallel
+      //    friction term is intentionally omitted: previously a leaf
+      //    sliding down a side wall kept losing vy on every micro-bounce
+      //    and stuck in the corner. Now bounces only flip the
+      //    perpendicular component, so leaves keep falling under gravity
+      //    along the wall and gusts can carry them back up and across.
       if (IS_MOBILE_FIELD) {
         const wr = Math.max(this.imgW, this.imgH) * this.scale * 0.18;
         if (this.x < wr && this.vx < 0) {
           this.x = wr;
           this.vx = -this.vx * WALL_RESTITUTION;
-          this.vy *= (1 - WALL_FRICTION);
-          this.av += (Math.random() - 0.5) * 1.0;
+          this.av += (Math.random() - 0.5) * 1.2;
         } else if (this.x > W - wr && this.vx > 0) {
           this.x = W - wr;
           this.vx = -this.vx * WALL_RESTITUTION;
-          this.vy *= (1 - WALL_FRICTION);
-          this.av += (Math.random() - 0.5) * 1.0;
+          this.av += (Math.random() - 0.5) * 1.2;
         }
         if (this.y < wr && this.vy < 0) {
           this.y = wr;
           this.vy = -this.vy * WALL_RESTITUTION;
-          this.vx *= (1 - WALL_FRICTION);
-          this.av += (Math.random() - 0.5) * 1.0;
+          this.av += (Math.random() - 0.5) * 1.2;
+        } else if (this.y > H - wr && this.vy > 0) {
+          // Bottom wall — bounce instead of rest. Slightly bouncier than
+          // the side walls so leaves visibly rebound off the floor and
+          // get a fresh chance to be picked up by wind, rather than
+          // dribbling along the bottom edge.
+          this.y = H - wr;
+          this.vy = -this.vy * (WALL_RESTITUTION + 0.15);
+          this.av += (Math.random() - 0.5) * 1.2;
         }
+        // Keep the ground-flatten visual disabled on mobile (no resting).
+        this.groundT = 0;
       }
 
       // Page edges are open on desktop — leaves blow off-screen and get
@@ -8988,10 +9003,15 @@
         }
       }
 
-      const sp = Math.hypot(this.vx, this.vy);
-      if (sp < LEAF_REST_SPEED) {
-        this.vx *= 0.7;
-        this.vy *= 0.7;
+      // Rest-speed damping is desktop-only. On mobile we want leaves
+      // to keep their tiny residual motion so flutter + gusts can act
+      // on them, instead of being snapped to zero when slow.
+      if (!IS_MOBILE_FIELD) {
+        const sp = Math.hypot(this.vx, this.vy);
+        if (sp < LEAF_REST_SPEED) {
+          this.vx *= 0.7;
+          this.vy *= 0.7;
+        }
       }
     }
 
