@@ -4675,6 +4675,23 @@
   }
   .mob-gen-submit:active { background: var(--moss); }
 
+  /* Vision & Quote: compact one-screen layout, no italic header */
+  #m-generator { padding: 64px 26px 28px; }
+  #m-generator .lead {
+    font-style: normal;
+    color: var(--ink);
+    font-size: 16.5px;
+    line-height: 1.45;
+    margin-bottom: 18px;
+  }
+  #m-generator .mob-gen-form { gap: 12px; margin-top: 2px; }
+  #m-generator .mob-gen-form input,
+  #m-generator .mob-gen-form textarea { padding: 6px 0 7px; }
+  #m-generator .mob-gen-form textarea { min-height: 48px; }
+  #m-generator .mob-gen-photo { padding: 12px; font-size: 14.5px; }
+  #m-generator .mob-gen-photo-status { margin-top: -2px; font-size: 10px; }
+  #m-generator .mob-gen-submit { margin-top: 2px; padding: 13px 22px; }
+
   /* reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .conveyor-track,
@@ -5920,8 +5937,7 @@
 
     <form class="mob-gen-form" id="mobGenForm" novalidate>
       <div class="field">
-        <label for="mob-vision">What would you like?</label>
-        <textarea id="mob-vision" name="vision" placeholder="A few words on what you'd love, what isn't working." rows="3"></textarea>
+        <textarea id="mob-vision" name="vision" placeholder="What would you like? Click here to type!" rows="2"></textarea>
       </div>
 
       <label class="mob-gen-photo" for="mob-photo">
