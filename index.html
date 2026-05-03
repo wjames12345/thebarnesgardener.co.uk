@@ -3093,7 +3093,16 @@
     text-transform: uppercase;
     color: var(--ink);
     line-height: 1.05;
+    appearance: none;
+    background: transparent;
+    border: none;
+    padding: 8px 0;
+    margin: 0;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
+  .mob-menu-label:active { opacity: 0.55; }
   .mob-menu-expand,
   .mob-menu-go {
     appearance: none;
@@ -4215,6 +4224,16 @@
     body.blog-popup-open .mob-menu-toggle,
     body.blog-popup-open #m-blog .mob-page-back {
       z-index: 1600;
+    }
+    /* When the user opens the hamburger menu while the blog popup is up,
+       hide the popup + blur underneath so the menu has a clean cream
+       backdrop. Both reappear when the menu closes (the .blog-popup-open
+       class stays on body the whole time). */
+    body.blog-popup-open.mob-menu-open .blog-blur-veil,
+    body.blog-popup-open.mob-menu-open .ios-popup,
+    body.blog-popup-open.mob-menu-open .ios-popup.visible {
+      opacity: 0 !important;
+      pointer-events: none !important;
     }
   }
 
@@ -5893,7 +5912,7 @@
     <ul class="mob-menu-list" id="mobMenuList">
       <li class="mob-menu-item" data-mob-key="home">
         <div class="mob-menu-row">
-          <span class="mob-menu-label">Home</span>
+          <button class="mob-menu-label" type="button" data-mob-go="home">Home</button>
           <button class="mob-menu-expand" type="button" aria-expanded="false" aria-label="About this section">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -5906,7 +5925,7 @@
 
       <li class="mob-menu-item" data-mob-key="about">
         <div class="mob-menu-row">
-          <span class="mob-menu-label">About</span>
+          <button class="mob-menu-label" type="button" data-mob-go="about">About</button>
           <button class="mob-menu-expand" type="button" aria-expanded="false" aria-label="About this section">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -5919,7 +5938,7 @@
 
       <li class="mob-menu-item" data-mob-key="services">
         <div class="mob-menu-row">
-          <span class="mob-menu-label">Services</span>
+          <button class="mob-menu-label" type="button" data-mob-go="services">Services</button>
           <button class="mob-menu-expand" type="button" aria-expanded="false" aria-label="About this section">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -5932,7 +5951,7 @@
 
       <li class="mob-menu-item" data-mob-key="gardens">
         <div class="mob-menu-row">
-          <span class="mob-menu-label">Testimonial Gardens</span>
+          <button class="mob-menu-label" type="button" data-mob-go="gardens">Testimonial Gardens</button>
           <button class="mob-menu-expand" type="button" aria-expanded="false" aria-label="About this section">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -5945,7 +5964,7 @@
 
       <li class="mob-menu-item" data-mob-key="generator">
         <div class="mob-menu-row">
-          <span class="mob-menu-label">Vision &amp; Quote</span>
+          <button class="mob-menu-label" type="button" data-mob-go="generator">Vision &amp; Quote</button>
           <button class="mob-menu-expand" type="button" aria-expanded="false" aria-label="About this section">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -5958,7 +5977,7 @@
 
       <li class="mob-menu-item" data-mob-key="blog">
         <div class="mob-menu-row">
-          <span class="mob-menu-label">What's Growing</span>
+          <button class="mob-menu-label" type="button" data-mob-go="blog">What's Growing</button>
           <button class="mob-menu-expand" type="button" aria-expanded="false" aria-label="About this section">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -5971,7 +5990,7 @@
 
       <li class="mob-menu-item" data-mob-key="podcast">
         <div class="mob-menu-row">
-          <span class="mob-menu-label">Podcast</span>
+          <button class="mob-menu-label" type="button" data-mob-go="podcast">Podcast</button>
           <button class="mob-menu-expand" type="button" aria-expanded="false" aria-label="About this section">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -5984,7 +6003,7 @@
 
       <li class="mob-menu-item" data-mob-key="shop">
         <div class="mob-menu-row">
-          <span class="mob-menu-label">Gary's Kit Shop</span>
+          <button class="mob-menu-label" type="button" data-mob-go="shop">Gary's Kit Shop</button>
           <button class="mob-menu-expand" type="button" aria-expanded="false" aria-label="About this section">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -5997,7 +6016,7 @@
 
       <li class="mob-menu-item" data-mob-key="contact">
         <div class="mob-menu-row">
-          <span class="mob-menu-label">Contact</span>
+          <button class="mob-menu-label" type="button" data-mob-go="contact">Contact</button>
           <button class="mob-menu-expand" type="button" aria-expanded="false" aria-label="About this section">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -6506,26 +6525,9 @@
       return;
     }
 
-    // Chevron — toggles the description panel under the row. Only one
-    // description open at a time so the menu stays compact.
-    const chevron = e.target.closest('.mob-menu-expand');
-    if (chevron) {
-      e.stopPropagation();
-      const item = chevron.closest('.mob-menu-item');
-      if (!item) return;
-      const wasOpen = item.classList.contains('is-open');
-      document.querySelectorAll('.mob-menu-item.is-open').forEach(o => {
-        o.classList.remove('is-open');
-        const c = o.querySelector('.mob-menu-expand');
-        if (c) c.setAttribute('aria-expanded', 'false');
-      });
-      if (!wasOpen) {
-        item.classList.add('is-open');
-        chevron.setAttribute('aria-expanded', 'true');
-      }
-      return;
-    }
-
+    // Navigation takes priority — both the label text and the right-arrow
+    // carry data-mob-go and route to the page. Tapping anywhere else on
+    // the row falls through to the row-toggle handler below.
     const goBtn = e.target.closest('[data-mob-go]');
     if (goBtn) {
       e.stopPropagation();
@@ -6536,6 +6538,28 @@
         closeMobMenu();
         showMobLoader();
         setTimeout(() => setMobPage(name), MOB_SWAP_DELAY_MS);
+      }
+      return;
+    }
+
+    // Anywhere else on a menu row — including the chevron — toggles the
+    // description panel under that row. Only one description open at a
+    // time so the menu stays compact.
+    const row = e.target.closest('.mob-menu-row');
+    if (row) {
+      e.stopPropagation();
+      const item = row.closest('.mob-menu-item');
+      if (!item) return;
+      const wasOpen = item.classList.contains('is-open');
+      document.querySelectorAll('.mob-menu-item.is-open').forEach(o => {
+        o.classList.remove('is-open');
+        const c = o.querySelector('.mob-menu-expand');
+        if (c) c.setAttribute('aria-expanded', 'false');
+      });
+      if (!wasOpen) {
+        item.classList.add('is-open');
+        const c = item.querySelector('.mob-menu-expand');
+        if (c) c.setAttribute('aria-expanded', 'true');
       }
       return;
     }
