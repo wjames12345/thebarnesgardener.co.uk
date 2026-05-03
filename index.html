@@ -4384,6 +4384,117 @@
     pointer-events: none;
     mix-blend-mode: multiply;
   }
+  .mob-map-hotspots {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .mob-map-hotspots path {
+    fill: rgba(74, 93, 58, 0.0);
+    stroke: rgba(74, 93, 58, 0.0);
+    stroke-width: 4;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast) var(--ease);
+  }
+  .mob-map-hotspots path:active,
+  .mob-map-hotspots path.is-tapped {
+    fill: rgba(74, 93, 58, 0.22);
+    stroke: rgba(74, 93, 58, 0.55);
+  }
+  .mob-map-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgba(20, 24, 18, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-fast) var(--ease);
+  }
+  .mob-map-popup.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .mob-map-popup-card {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    background: var(--cream, #f4f0e6);
+    border-radius: 22px 22px 0 0;
+    padding: 26px 22px max(28px, env(safe-area-inset-bottom));
+    box-shadow: 0 -10px 34px rgba(0, 0, 0, 0.22);
+    transform: translateY(20px);
+    transition: transform var(--dur-fast) var(--ease);
+  }
+  .mob-map-popup.is-open .mob-map-popup-card { transform: translateY(0); }
+  .mob-map-popup-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+    border: none;
+    background: transparent;
+    color: var(--ink, #222);
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mob-map-popup-eyebrow {
+    font-family: 'Fraunces', serif;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--moss, #4a5d3a);
+    margin: 0 0 6px;
+  }
+  .mob-map-popup-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.25;
+    color: var(--ink, #222);
+    margin: 0 0 14px;
+  }
+  .mob-map-popup-cases {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .mob-map-popup-cases li {
+    font-family: 'Fraunces', serif;
+    font-size: 15.5px;
+    color: var(--ink, #222);
+    padding: 12px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .mob-map-popup-cases li:last-child { border-bottom: 1px solid rgba(0, 0, 0, 0.08); }
+  .mob-map-popup-cases .case-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--moss, #4a5d3a);
+    flex: 0 0 auto;
+  }
   .mob-map-zoom {
     position: absolute;
     left: 16px;
@@ -5956,6 +6067,28 @@
     <div class="mob-map-viewport" id="mobMapViewport">
       <div class="mob-map-canvas" id="mobMapCanvas">
         <img src="NEW MAP transparent.png" alt="Map of the work area" loading="lazy" decoding="async">
+        <svg class="mob-map-hotspots" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid meet" aria-label="Tap an area to see case studies">
+          <path data-area="notting-hill" aria-label="Notting Hill"
+            d="M 884,79 L 887,151 L 887,153 L 881,162 L 774,163 L 751,157 L 751,141 L 755,84 L 759,70 L 773,50 L 776,48 L 792,40 L 808,36 L 813,35 L 816,35 L 850,39 L 862,43 L 879,65 Z"/>
+          <path data-area="chiswick" aria-label="Chiswick"
+            d="M 462,443 L 460,291 L 463,284 L 470,279 L 543,275 L 564,276 L 592,279 L 598,285 L 596,443 Z"/>
+          <path data-area="barnes" aria-label="Barnes"
+            d="M 813,397 L 812,522 L 788,543 L 692,543 L 678,509 L 675,457 L 676,388 L 680,385 L 684,382 L 689,379 L 698,375 L 811,377 Z"/>
+          <path data-area="twickenham" aria-label="Twickenham"
+            d="M 241,767 L 240,684 L 241,624 L 249,601 L 364,600 L 368,604 L 378,637 L 378,639 L 376,735 L 372,762 L 371,768 Z"/>
+          <path data-area="clapham" aria-label="Clapham"
+            d="M 1358,501 L 1356,638 L 1223,638 L 1222,611 L 1221,476 L 1222,473 L 1223,471 L 1348,471 L 1354,476 Z"/>
+        </svg>
+      </div>
+    </div>
+    <div class="mob-map-popup" id="mobMapPopup" aria-hidden="true">
+      <div class="mob-map-popup-card" role="dialog" aria-modal="true" aria-labelledby="mobMapPopupTitle">
+        <button class="mob-map-popup-close" type="button" aria-label="Close">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="mob-map-popup-eyebrow" id="mobMapPopupEyebrow"></div>
+        <h3 class="mob-map-popup-title" id="mobMapPopupTitle"></h3>
+        <ul class="mob-map-popup-cases" id="mobMapPopupCases"></ul>
       </div>
     </div>
     <div class="mob-map-zoom" role="group" aria-label="Pan map left or right">
@@ -6519,6 +6652,72 @@
       }
     });
     observer.observe(document.body, { attributes: true, attributeFilter: ['data-mob-page'] });
+
+    // ── Hotspot tap detection (only fire on a clean tap, not after a pan) ──
+    const popup = document.getElementById('mobMapPopup');
+    if (popup) {
+      const titleEl   = popup.querySelector('.mob-map-popup-title');
+      const eyebrowEl = popup.querySelector('.mob-map-popup-eyebrow');
+      const casesEl   = popup.querySelector('.mob-map-popup-cases');
+
+      const COUNT_WORDS_M = ['One', 'Two', 'Three', 'Four', 'Five', 'Six'];
+      const COUNT_NOUN_M  = (n) => n === 1 ? 'garden' : 'gardens';
+
+      function openMapPopup(areaKey) {
+        const data = (typeof MAP_AREAS !== 'undefined') ? MAP_AREAS[areaKey] : null;
+        if (!data) return;
+        const n = data.cases.length;
+        eyebrowEl.textContent = data.name;
+        titleEl.innerHTML = `${COUNT_WORDS_M[n-1] || n} <em>${COUNT_NOUN_M(n)}</em>`;
+        casesEl.innerHTML = data.cases.map((name, i) =>
+          `<li><span>${name}</span><span class="case-num">Case ${String(i+1).padStart(2,'0')}</span></li>`
+        ).join('');
+        popup.classList.add('is-open');
+        popup.setAttribute('aria-hidden', 'false');
+      }
+      function closeMapPopup() {
+        popup.classList.remove('is-open');
+        popup.setAttribute('aria-hidden', 'true');
+      }
+
+      popup.addEventListener('click', (e) => {
+        if (e.target.closest('.mob-map-popup-close')) { closeMapPopup(); return; }
+        if (e.target === popup) closeMapPopup();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && popup.classList.contains('is-open')) closeMapPopup();
+      });
+      // Close popup when leaving the map page
+      new MutationObserver(() => {
+        if (document.body.dataset.mobPage !== 'map' && popup.classList.contains('is-open')) closeMapPopup();
+      }).observe(document.body, { attributes: true, attributeFilter: ['data-mob-page'] });
+
+      // Tap detection: pointerdown stores start; pointerup fires only if
+      // movement < TAP_TOL and time < TAP_TIME. Anything bigger is a pan.
+      const TAP_TOL = 8;
+      const TAP_TIME = 500;
+      let tapStart = null;
+      const hotspotsSvg = canvas.querySelector('.mob-map-hotspots');
+      if (hotspotsSvg) {
+        hotspotsSvg.addEventListener('pointerdown', (e) => {
+          const path = e.target.closest('path[data-area]');
+          if (!path) { tapStart = null; return; }
+          tapStart = { x: e.clientX, y: e.clientY, t: Date.now(), area: path.dataset.area };
+        });
+        hotspotsSvg.addEventListener('pointerup', (e) => {
+          if (!tapStart) return;
+          const dx = e.clientX - tapStart.x;
+          const dy = e.clientY - tapStart.y;
+          const moved = Math.hypot(dx, dy);
+          const elapsed = Date.now() - tapStart.t;
+          if (moved <= TAP_TOL && elapsed <= TAP_TIME) {
+            openMapPopup(tapStart.area);
+          }
+          tapStart = null;
+        });
+        hotspotsSvg.addEventListener('pointercancel', () => { tapStart = null; });
+      }
+    }
   })();
 
   /* ─── Mobile services: tap a card → popup with full description ─── */
@@ -7950,21 +8149,9 @@
     );
   }
 
-  addEventListener('pointerdown', (e) => {
-    if (e.button !== 0) return;
-    if (!isLeafSpawnTarget(e.target)) return;
-
-    spawnClickLeafAt(e.clientX, e.clientY);
-
-    // Begin a held-click stream — fresh leaves keep dropping at the
-    // current cursor position until the button is released.
-    if (activeStreams.has(e.pointerId)) clearInterval(activeStreams.get(e.pointerId));
-    const id = setInterval(() => {
-      spawnClickLeafAt(cursor.x, cursor.y);
-    }, STREAM_INTERVAL_MS);
-    activeStreams.set(e.pointerId, id);
-  });
-
+  // Click-to-drop and hold-for-stream were turned off — they read as a
+  // gimmick that gets in the way of taps on real interactive elements.
+  // The ambient/gust/wind leaf system below is still active.
   function endStream(e) {
     const id = activeStreams.get(e.pointerId);
     if (id != null) {
@@ -7972,9 +8159,6 @@
       activeStreams.delete(e.pointerId);
     }
   }
-  addEventListener('pointerup',     endStream);
-  addEventListener('pointercancel', endStream);
-  addEventListener('pointerleave',  endStream);
   addEventListener('blur', () => {
     for (const id of activeStreams.values()) clearInterval(id);
     activeStreams.clear();
