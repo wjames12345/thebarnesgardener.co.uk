@@ -798,6 +798,14 @@
     margin-bottom: 24px;
     font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
   }
+  .lat-lead {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    line-height: 1.45;
+    color: var(--ink);
+    max-width: 28ch;
+    font-variation-settings: "opsz" 144;
+  }
   .lat-steps {
     display: flex;
     flex-direction: column;
@@ -4242,7 +4250,7 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: var(--cream-deep);
+    background: var(--cream);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -4257,11 +4265,12 @@
     opacity: 1;
     pointer-events: auto;
   }
-  /* Compact stage — small circle, bulb stop-motion grows inside. */
+  /* Generous stage — large enough that the bulb stop-motion reads
+     cleanly mid-screen on a phone. */
   .mob-stage {
     position: relative;
-    width: 132px;
-    height: 132px;
+    width: 240px;
+    height: 240px;
   }
 
   /* Hairline moss ring. Faint full track + a quarter-arc that rotates
@@ -4305,8 +4314,8 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 42px;
-    height: 109px;
+    width: 84px;
+    height: 218px;
     transform: translate(-50%, -50%);
     background-image: url('BULB TO FLOWER transparent.png');
     background-repeat: no-repeat;
@@ -5417,30 +5426,8 @@
         <div class="page-inner">
           <div class="lat-grid">
             <div class="lat-left">
-              <div class="lat-steps fade-in" style="--fade-delay: 0.15s;">
-                <div class="step">
-                  <span class="step-num">i.</span>
-                  <div>
-                    <h3>You send a photograph</h3>
-                    <p>One picture of the garden as it is, plus a sentence on what you'd like.</p>
-                  </div>
-                </div>
-                <div class="step">
-                  <span class="step-num">ii.</span>
-                  <div>
-                    <h3>Gary designs your vision</h3>
-                    <p>Within 24 hours, Monday to Friday: a visual concept, a written quote, and a clear plan.</p>
-                  </div>
-                </div>
-                <div class="step">
-                  <span class="step-num">iii.</span>
-                  <div>
-                    <h3>You decide</h3>
-                    <p>No obligation. If you like it, we book a date. If not, the concept is yours to keep.</p>
-                  </div>
-                </div>
-              </div>
-
+              <h2 class="fade-in" style="--fade-delay: 0.0s;">Upload a <em>photograph</em>.</h2>
+              <p class="lat-lead fade-in" style="--fade-delay: 0.15s;">Upload a photo and I will send you back my vision of what I can offer along with a quote within 24 hours.</p>
             </div>
 
             <div class="lat-right fade-in" style="--fade-delay: 0.45s;">
@@ -5595,42 +5582,42 @@
 
           <div class="gardens-grid fade-in" style="--fade-delay: 0.12s;">
             <a class="gardens-tile" data-road="Castelnau" data-area="Barnes" aria-label="Castelnau, Barnes">
-              <img src="garden-after.jpg" alt="Castelnau garden" loading="lazy" decoding="async">
+              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
               <span class="gardens-tile-name">Castelnau</span>
               <span class="gardens-tile-area">Barnes</span>
             </a>
             <a class="gardens-tile" data-road="Lonsdale Road" data-area="Barnes" aria-label="Lonsdale Road, Barnes">
-              <img src="garden-before.jpg" alt="Lonsdale Road garden" loading="lazy" decoding="async">
+              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
               <span class="gardens-tile-name">Lonsdale Road</span>
               <span class="gardens-tile-area">Barnes</span>
             </a>
             <a class="gardens-tile" data-road="Riverview Gardens" data-area="Barnes" aria-label="Riverview Gardens, Barnes">
-              <img src="after.jpg" alt="Riverview Gardens" loading="lazy" decoding="async">
+              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
               <span class="gardens-tile-name">Riverview Gardens</span>
               <span class="gardens-tile-area">Barnes</span>
             </a>
             <a class="gardens-tile" data-road="Westmoreland Road" data-area="Barnes" aria-label="Westmoreland Road, Barnes">
-              <img src="before.jpg" alt="Westmoreland Road garden" loading="lazy" decoding="async">
+              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
               <span class="gardens-tile-name">Westmoreland Road</span>
               <span class="gardens-tile-area">Barnes</span>
             </a>
             <a class="gardens-tile" data-road="Lytton Grove" data-area="Putney" aria-label="Lytton Grove, Putney">
-              <img src="garden-after.jpg" alt="Lytton Grove garden" loading="lazy" decoding="async">
+              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
               <span class="gardens-tile-name">Lytton Grove</span>
               <span class="gardens-tile-area">Putney</span>
             </a>
             <a class="gardens-tile" data-road="Carlton Drive" data-area="Putney" aria-label="Carlton Drive, Putney">
-              <img src="garden-before.jpg" alt="Carlton Drive garden" loading="lazy" decoding="async">
+              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
               <span class="gardens-tile-name">Carlton Drive</span>
               <span class="gardens-tile-area">Putney</span>
             </a>
             <a class="gardens-tile" data-road="Disraeli Road" data-area="Putney" aria-label="Disraeli Road, Putney">
-              <img src="after.jpg" alt="Disraeli Road garden" loading="lazy" decoding="async">
+              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
               <span class="gardens-tile-name">Disraeli Road</span>
               <span class="gardens-tile-area">Putney</span>
             </a>
             <a class="gardens-tile" data-road="Erpingham Road" data-area="Putney" aria-label="Erpingham Road, Putney">
-              <img src="before.jpg" alt="Erpingham Road garden" loading="lazy" decoding="async">
+              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
               <span class="gardens-tile-name">Erpingham Road</span>
               <span class="gardens-tile-area">Putney</span>
             </a>
@@ -6039,7 +6026,7 @@
     <h1 class="mob-hero-title">
       <span class="lc">The</span>
       <span class="lc lc-em">Barnes</span>
-      <span class="lc">Gardener<span class="stop">.</span></span>
+      <span class="lc">Gardener</span>
     </h1>
 
   </section>
@@ -6048,7 +6035,7 @@
     <button class="mob-page-back" type="button" data-mob-back aria-label="Back to home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
-    <p class="lead">Send a photo and I will send you back my vision of what I can offer along with a quote within 24 hours.</p>
+    <p class="lead">Upload a photo and I will send you back my vision of what I can offer along with a quote within 24 hours.</p>
 
     <form class="mob-gen-form" id="mobGenForm" novalidate>
       <div class="field">
@@ -6174,42 +6161,42 @@
 
     <div class="mob-gardens-list">
       <a class="mob-gardens-card" data-road="Castelnau" data-area="Barnes">
-        <img src="garden-after.jpg" alt="Castelnau garden" loading="lazy" decoding="async">
+        <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
         <span class="mob-gardens-card-name">Castelnau</span>
         <span class="mob-gardens-card-area">Barnes</span>
       </a>
       <a class="mob-gardens-card" data-road="Lonsdale Road" data-area="Barnes">
-        <img src="garden-before.jpg" alt="Lonsdale Road garden" loading="lazy" decoding="async">
+        <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
         <span class="mob-gardens-card-name">Lonsdale Road</span>
         <span class="mob-gardens-card-area">Barnes</span>
       </a>
       <a class="mob-gardens-card" data-road="Riverview Gardens" data-area="Barnes">
-        <img src="after.jpg" alt="Riverview Gardens" loading="lazy" decoding="async">
+        <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
         <span class="mob-gardens-card-name">Riverview Gardens</span>
         <span class="mob-gardens-card-area">Barnes</span>
       </a>
       <a class="mob-gardens-card" data-road="Westmoreland Road" data-area="Barnes">
-        <img src="before.jpg" alt="Westmoreland Road garden" loading="lazy" decoding="async">
+        <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
         <span class="mob-gardens-card-name">Westmoreland Road</span>
         <span class="mob-gardens-card-area">Barnes</span>
       </a>
       <a class="mob-gardens-card" data-road="Lytton Grove" data-area="Putney">
-        <img src="garden-after.jpg" alt="Lytton Grove garden" loading="lazy" decoding="async">
+        <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
         <span class="mob-gardens-card-name">Lytton Grove</span>
         <span class="mob-gardens-card-area">Putney</span>
       </a>
       <a class="mob-gardens-card" data-road="Carlton Drive" data-area="Putney">
-        <img src="garden-before.jpg" alt="Carlton Drive garden" loading="lazy" decoding="async">
+        <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
         <span class="mob-gardens-card-name">Carlton Drive</span>
         <span class="mob-gardens-card-area">Putney</span>
       </a>
       <a class="mob-gardens-card" data-road="Disraeli Road" data-area="Putney">
-        <img src="after.jpg" alt="Disraeli Road garden" loading="lazy" decoding="async">
+        <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
         <span class="mob-gardens-card-name">Disraeli Road</span>
         <span class="mob-gardens-card-area">Putney</span>
       </a>
       <a class="mob-gardens-card" data-road="Erpingham Road" data-area="Putney">
-        <img src="before.jpg" alt="Erpingham Road garden" loading="lazy" decoding="async">
+        <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" loading="lazy" decoding="async">
         <span class="mob-gardens-card-name">Erpingham Road</span>
         <span class="mob-gardens-card-area">Putney</span>
       </a>
@@ -6913,6 +6900,14 @@
     });
 
     page.classList.add('active');
+
+    // Always land at the top of the new page — any scrollable inner pane
+    // (gardens, blog, shop, case, contact) gets reset, plus the window
+    // itself in case the viewport ever scrolls.
+    page.querySelectorAll('.page-inner, [data-scroll]').forEach(el => {
+      if (el.scrollTop) el.scrollTop = 0;
+    });
+    if (window.scrollY) window.scrollTo(0, 0);
 
     // Update side-nav active state
     document.querySelectorAll('.sidenav a').forEach(a => {
