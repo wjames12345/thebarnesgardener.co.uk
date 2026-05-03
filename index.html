@@ -4237,7 +4237,7 @@
     }
   }
 
-  /* ─── MOBILE LOADER — constellation of nodes around the bulb ─── */
+  /* ─── MOBILE LOADER — thin circle with bulb growing inside ─── */
   .mob-loader {
     display: none;
     position: fixed;
@@ -4257,12 +4257,41 @@
     opacity: 1;
     pointer-events: auto;
   }
-  /* Stage: a small Apple-boot-sized circle. The bulb sits in the centre,
-     the dot-ring rotates clockwise around it. */
+  /* Compact stage — a small circle, bulb stop-motion grows inside. */
   .mob-stage {
     position: relative;
-    width: 220px;
-    height: 220px;
+    width: 120px;
+    height: 120px;
+  }
+
+  /* Thin moss line forming the circle. A faint full track plus a short
+     arc that travels around it gives the loader some life without noise. */
+  .mob-ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .mob-ring__track {
+    fill: none;
+    stroke: var(--moss);
+    stroke-opacity: 0.2;
+    stroke-width: 1.2;
+  }
+  .mob-ring__arc {
+    fill: none;
+    stroke: var(--moss);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    transform-origin: 50% 50%;
+  }
+  .mob-loader.visible .mob-ring__arc {
+    animation: ringTravel 1.8s linear infinite;
+  }
+  @keyframes ringTravel {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
   }
 
   /* Centre bulb — single growing form, all 4 stages flash IN PLACE.
@@ -4273,7 +4302,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 80px;
+    width: 56px;
     aspect-ratio: 100 / 130;
     transform: translate(-50%, -50%);
   }
@@ -4294,47 +4323,17 @@
     animation-delay: calc(var(--i) * 0.15s);
   }
 
-  /* The ring of 12 dots. Spins as one, dots stay upright (transform on
-     parent only), distance set per-dot via --a (angle) and --r (radius). */
-  .mob-ring {
-    position: absolute;
-    inset: 0;
-  }
-  .mob-loader.visible .mob-ring {
-    animation: ringSpin 3.4s linear infinite;
-  }
-  @keyframes ringSpin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  .ring-dot {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    margin: -2.5px 0 0 -2.5px;
-    border-radius: 50%;
-    background: var(--moss);
-    transform: rotate(var(--a)) translateX(var(--r, 92px));
-    opacity: 0;
-    animation: dotFadeIn 0.5s ease-out forwards;
-    animation-delay: calc(var(--di, 0s) + 0.15s);
-  }
-  @keyframes dotFadeIn {
-    to { opacity: 0.85; }
-  }
-
-  /* Reduced motion: dots steady, ring static, bulbs flash only once */
+  /* Reduced motion: ring still, bulb settles on final frame. */
   @media (prefers-reduced-motion: reduce) {
-    .mob-loader.visible .mob-ring,
+    .mob-loader.visible .mob-ring__arc,
+    .mob-loader.visible .mob-bulb img,
     .mob-hero-title .lc,
     .mob-list-nav {
       animation: none !important;
       opacity: 1 !important;
       transform: none !important;
     }
-    .ring-dot { opacity: 0.6; animation: none !important; }
+    .mob-loader.visible .mob-bulb img:nth-child(-n+3) { opacity: 0 !important; }
   }
 
   /* ─── SERVICES PAGE: 2-up grid of square cards, tap for popup ─── */
@@ -6379,23 +6378,14 @@
   </section>
 </div>
 
-<!-- Mobile loader — small bulb at centre, 12 dots in a clockwise-spinning ring -->
+<!-- Mobile loader — thin moss circle with the bulb stop-motion growing inside -->
 <div class="mob-loader" id="mobLoader" aria-hidden="true">
   <div class="mob-stage">
-    <div class="mob-ring">
-      <span class="ring-dot" style="--a:0deg;   --di:0s"></span>
-      <span class="ring-dot" style="--a:30deg;  --di:.04s"></span>
-      <span class="ring-dot" style="--a:60deg;  --di:.08s"></span>
-      <span class="ring-dot" style="--a:90deg;  --di:.12s"></span>
-      <span class="ring-dot" style="--a:120deg; --di:.16s"></span>
-      <span class="ring-dot" style="--a:150deg; --di:.20s"></span>
-      <span class="ring-dot" style="--a:180deg; --di:.24s"></span>
-      <span class="ring-dot" style="--a:210deg; --di:.28s"></span>
-      <span class="ring-dot" style="--a:240deg; --di:.32s"></span>
-      <span class="ring-dot" style="--a:270deg; --di:.36s"></span>
-      <span class="ring-dot" style="--a:300deg; --di:.40s"></span>
-      <span class="ring-dot" style="--a:330deg; --di:.44s"></span>
-    </div>
+    <svg class="mob-ring" viewBox="0 0 120 120" aria-hidden="true">
+      <circle class="mob-ring__track" cx="60" cy="60" r="54"></circle>
+      <circle class="mob-ring__arc"   cx="60" cy="60" r="54"
+              stroke-dasharray="70 270"></circle>
+    </svg>
 
     <div class="mob-bulb">
       <img src="BULB TO FLOWER transparent.png" alt="" style="--i: 0">
