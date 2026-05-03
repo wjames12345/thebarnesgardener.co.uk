@@ -33,7 +33,7 @@
 <link rel="preload" as="image" href="BULB TO FLOWER.png" fetchpriority="high">
 <style>
   :root {
-    --cream: #E6DFC2;
+    --cream: #F2ECDC;
     --cream-deep: #E6DCBE;
     --paper: #F7F2E5;
     --ink: #1B2418;
@@ -4266,11 +4266,14 @@
     pointer-events: auto;
   }
   /* Generous stage — large enough that the bulb stop-motion reads
-     cleanly mid-screen on a phone. */
+     cleanly mid-screen on a phone. Overflow visible so the bloom
+     (taller than the ring) and roots (wider than the ring) are not
+     clipped — the loader background fills the rest of the screen. */
   .mob-stage {
     position: relative;
     width: 240px;
     height: 240px;
+    overflow: visible;
   }
 
   /* Hairline moss ring. Faint full track + a quarter-arc that rotates
@@ -4305,39 +4308,65 @@
     to   { transform: rotate(270deg); }
   }
 
-  /* Centre bulb — single sprite, background-position flipbook between the
-     four stages of the BULB TO FLOWER composite. Hard-cut snaps so growth
-     reads as stop motion, not a blur of overlapping fades. Container is
-     sized to one stage's aspect (640×1664 ≈ 100/260) so the bulb sits at
-     a natural proportion inside the ring. */
-  .mob-bulb {
+  /* Bulb stop-motion — four separate frame layers, each anchored to the
+     same point (the centre of the bulb body) so the bulb stays put while
+     roots fan downward and the bloom rises upward. Per-frame translate
+     values come from a pixel measurement of the bulb body centroid in
+     each of the four 640×1664 sprite cells:
+       frame 0 (dormant): centroid at (49.8%, 73.3%) of its frame
+       frame 1 (sprout) : (40.6%, 73.6%)
+       frame 2 (bud)    : (32.0%, 71.8%)
+       frame 3 (bloom)  : (38.3%, 70.1%)
+     Each layer renders the full 4-up sprite scaled 4× wider than the
+     frame box, then `background-position-x` slides to the correct cell.
+     `mix-blend-mode: multiply` drops the white sprite background so only
+     the dark pencil lines sit on the cream loader. */
+  .mob-bulb-frame {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 84px;
-    height: 218px;
-    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 520px;   /* 200 × (1664/640) — preserves one frame's aspect */
     background-image: url('BULB TO FLOWER transparent.png');
     background-repeat: no-repeat;
     background-size: 400% 100%;
-    background-position: 0% 50%;
     mix-blend-mode: multiply;
     pointer-events: none;
+    opacity: 0;
+    will-change: opacity;
   }
-  .mob-loader.visible .mob-bulb {
-    animation: mobBulbFlipbook 1.04s infinite;
+  .mob-bulb-frame[data-i="0"] {
+    background-position: 0%      50%;
+    transform: translate(-49.8%, -73.3%);
   }
-  @keyframes mobBulbFlipbook {
-    0%,  24.9% { background-position: 0%      50%; }
-    25%, 49.9% { background-position: 33.333% 50%; }
-    50%, 74.9% { background-position: 66.667% 50%; }
-    75%, 100%  { background-position: 100%    50%; }
+  .mob-bulb-frame[data-i="1"] {
+    background-position: 33.333% 50%;
+    transform: translate(-40.6%, -73.6%);
   }
+  .mob-bulb-frame[data-i="2"] {
+    background-position: 66.667% 50%;
+    transform: translate(-32.0%, -71.8%);
+  }
+  .mob-bulb-frame[data-i="3"] {
+    background-position: 100%    50%;
+    transform: translate(-38.3%, -70.1%);
+  }
+  /* Hard-cut flipbook — each frame owns one quarter of the cycle. Using
+     four named keyframe sets (one per frame) avoids any cross-fade glitch
+     when an animation-delay loop wraps. */
+  .mob-loader.visible .mob-bulb-frame[data-i="0"] { animation: mobBulb0 1.04s infinite step-end; }
+  .mob-loader.visible .mob-bulb-frame[data-i="1"] { animation: mobBulb1 1.04s infinite step-end; }
+  .mob-loader.visible .mob-bulb-frame[data-i="2"] { animation: mobBulb2 1.04s infinite step-end; }
+  .mob-loader.visible .mob-bulb-frame[data-i="3"] { animation: mobBulb3 1.04s infinite step-end; }
+  @keyframes mobBulb0 { 0% { opacity: 1; } 25%, 100% { opacity: 0; } }
+  @keyframes mobBulb1 { 0%, 24.9% { opacity: 0; } 25% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  @keyframes mobBulb2 { 0%, 49.9% { opacity: 0; } 50% { opacity: 1; } 75%, 100% { opacity: 0; } }
+  @keyframes mobBulb3 { 0%, 74.9% { opacity: 0; } 75%, 100% { opacity: 1; } }
 
   /* Reduced motion: ring still at top, bulb settles on the final (bloomed) frame. */
   @media (prefers-reduced-motion: reduce) {
     .mob-loader.visible .mob-ring__arc,
-    .mob-loader.visible .mob-bulb,
+    .mob-loader.visible .mob-bulb-frame,
     .mob-hero-title .lc,
     .mob-list-nav {
       animation: none !important;
@@ -4345,9 +4374,7 @@
     .mob-loader.visible .mob-ring__arc {
       transform: rotate(-90deg) !important;
     }
-    .mob-loader.visible .mob-bulb {
-      background-position: 100% 50% !important;
-    }
+    .mob-loader.visible .mob-bulb-frame[data-i="3"] { opacity: 1 !important; }
   }
 
   /* ─── SERVICES PAGE: 2-up grid of square cards, tap for popup ─── */
@@ -6379,7 +6406,10 @@
               stroke-dasharray="95 282"></circle>
     </svg>
 
-    <div class="mob-bulb" role="img" aria-label="Bulb growing into flower"></div>
+    <div class="mob-bulb-frame" data-i="0" role="img" aria-label="Bulb growing into flower"></div>
+    <div class="mob-bulb-frame" data-i="1" aria-hidden="true"></div>
+    <div class="mob-bulb-frame" data-i="2" aria-hidden="true"></div>
+    <div class="mob-bulb-frame" data-i="3" aria-hidden="true"></div>
   </div>
 </div>
 
