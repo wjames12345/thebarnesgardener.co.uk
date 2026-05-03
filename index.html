@@ -2567,6 +2567,112 @@
   }
 
   /* ════════════════════════════════════════════════════════════════════
+     TESTIMONIAL GARDENS — two area groups, photo grid per area
+     ════════════════════════════════════════════════════════════════════ */
+  .page-gardens .page-inner {
+    padding: var(--page-pad-y-tight) var(--page-pad-x);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .page-gardens .page-inner::-webkit-scrollbar { width: 6px; }
+  .page-gardens .page-inner::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+
+  .gardens-head { max-width: 880px; }
+  .gardens-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 50px;
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .gardens-head h2 em {
+    font-style: italic;
+    color: var(--moss);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  }
+  .gardens-lead {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+  }
+
+  .gardens-areas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    max-width: 1200px;
+    border-top: 1px solid var(--rule);
+    padding-top: 24px;
+  }
+  .gardens-area {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--paper);
+  }
+  .gardens-area-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .gardens-tile {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 4px;
+    cursor: pointer;
+    background: var(--cream-deep);
+  }
+  .gardens-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease);
+  }
+  .gardens-tile:hover img,
+  .gardens-tile:focus-visible img { transform: scale(1.04); }
+  .gardens-tile-name {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    background: rgba(27, 36, 24, 0.78);
+    color: var(--cream);
+    padding: 6px 10px;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .gardens-tile:focus-visible {
+    outline: 2px solid var(--moss);
+    outline-offset: 3px;
+  }
+  .gardens-area-name {
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 26px;
+    color: var(--moss);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    margin-top: 4px;
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
      LOADING OVERLAY — single bulb-to-flower composite, fade in/out.
      Total cycle under 1s. Plays once per page transition.
      ════════════════════════════════════════════════════════════════════ */
@@ -3867,7 +3973,7 @@
     body[data-mob-page="about"]     #m-about,
     body[data-mob-page="services"]  #m-services,
     body[data-mob-page="contact"]   #m-contact,
-    body[data-mob-page="map"]       #m-map,
+    body[data-mob-page="gardens"]   #m-gardens,
     body[data-mob-page="blog"]      #m-blog,
     body[data-mob-page="podcast"]   #m-podcast,
     body[data-mob-page="shop"]      #m-shop { display: block; }
@@ -3876,7 +3982,7 @@
     body[data-mob-page="about"]     .mob-hero,
     body[data-mob-page="services"]  .mob-hero,
     body[data-mob-page="contact"]   .mob-hero,
-    body[data-mob-page="map"]       .mob-hero,
+    body[data-mob-page="gardens"]   .mob-hero,
     body[data-mob-page="blog"]      .mob-hero,
     body[data-mob-page="podcast"]   .mob-hero,
     body[data-mob-page="shop"]      .mob-hero { display: none; }
@@ -4550,6 +4656,49 @@
     cursor: pointer;
   }
 
+  /* ─── TESTIMONIAL GARDENS — vertical scrollable list ─── */
+  #m-gardens h2 { margin-bottom: 14px; }
+  #m-gardens .lead { margin-bottom: 26px; }
+  .mob-gardens-list {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .mob-gardens-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .mob-gardens-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    border-radius: 4px;
+    background: var(--cream-deep);
+  }
+  .mob-gardens-card-name {
+    display: block;
+    margin-top: 10px;
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    line-height: 1.15;
+    letter-spacing: -0.018em;
+    color: var(--ink);
+  }
+  .mob-gardens-card-area {
+    display: block;
+    margin-top: 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--sage);
+    font-weight: 500;
+  }
+  .mob-gardens-card:active img { opacity: 0.85; }
+
   /* ─── GENERATOR PAGE: 1·2·3 steps + photo upload form ─── */
   .mob-gen-steps {
     margin: 4px 0 28px;
@@ -5111,7 +5260,7 @@
       <a href="#home"     data-link>Home</a>
       <a href="#about"    data-link>About</a>
       <a href="#services" data-link>Services</a>
-      <a href="#map"      data-link>Map of Past Work</a>
+      <a href="#gardens"  data-link>Testimonial Gardens</a>
       <a href="#latelier" data-link>Vision <img class="amp-symbol" src="ampersand.png" alt="and"> Quote</a>
       <a href="#blog"     data-link>What's Growing</a>
       <a href="#podcast"  data-link>Podcast</a>
@@ -5424,47 +5573,58 @@
         </div>
       </section>
 
-      <!-- ═══════════ MAP OF WORK ═══════════ -->
-      <section class="page page-map" id="map">
+      <!-- ═══════════ TESTIMONIAL GARDENS ═══════════ -->
+      <section class="page page-gardens" id="gardens">
         <div class="page-inner">
-          <!-- VIEW 1: Map overview with clickable numbered circles -->
-          <div class="map-overview" id="mapOverview">
-            <div class="map-canvas">
-              <img src="NEW MAP transparent.png" alt="A hand-drawn map of West and South-West London showing the areas Gary works across" id="mapImg" loading="lazy" decoding="async">
-              <!--
-                SVG hotspot overlay. The viewBox matches the image's actual
-                pixel dimensions (1536×1024). Each <path> is the traced
-                silhouette of one of the five hand-drawn numbered trees in
-                the illustration, generated by extracting the green-foliage
-                contour from the source PNG with skimage.measure.find_contours
-                and snapped to ~85 points each. The path is the click target:
-                clicking inside the tree shape opens that area's case grid;
-                clicking anywhere else on the map does nothing.
-              -->
-              <svg class="map-hotspot-overlay" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid meet" aria-hidden="false">
-                <path class="map-hotspot" data-area="notting-hill" tabindex="0" role="button" aria-label="Notting Hill, 2 case studies"
-                  d="M 884,79 L 887,151 L 887,153 L 881,162 L 774,163 L 751,157 L 751,141 L 755,84 L 759,70 L 773,50 L 776,48 L 792,40 L 808,36 L 813,35 L 816,35 L 850,39 L 862,43 L 879,65 Z"/>
-                <path class="map-hotspot" data-area="chiswick" tabindex="0" role="button" aria-label="Chiswick, 1 case study"
-                  d="M 462,443 L 460,291 L 463,284 L 470,279 L 543,275 L 564,276 L 592,279 L 598,285 L 596,443 Z"/>
-                <path class="map-hotspot" data-area="barnes" tabindex="0" role="button" aria-label="Barnes, 4 case studies"
-                  d="M 813,397 L 812,522 L 788,543 L 692,543 L 678,509 L 675,457 L 676,388 L 680,385 L 684,382 L 689,379 L 698,375 L 811,377 Z"/>
-                <path class="map-hotspot" data-area="twickenham" tabindex="0" role="button" aria-label="Twickenham, 1 case study"
-                  d="M 241,767 L 240,684 L 241,624 L 249,601 L 364,600 L 368,604 L 378,637 L 378,639 L 376,735 L 372,762 L 371,768 Z"/>
-                <path class="map-hotspot" data-area="clapham" tabindex="0" role="button" aria-label="Clapham, 1 case study"
-                  d="M 1358,501 L 1356,638 L 1223,638 L 1222,611 L 1221,476 L 1222,473 L 1223,471 L 1348,471 L 1354,476 Z"/>
-              </svg>
-            </div>
+          <div class="gardens-head fade-in" style="--fade-delay: 0.0s;">
+            <h2>Testimonial <em>Gardens</em>.</h2>
+            <p class="gardens-lead">A working portfolio — gardens Gary has shaped over the years, grouped by the area where he's worked.</p>
           </div>
 
-          <!-- VIEW 2: Full-page case study grid (hidden by default) -->
-          <div class="map-cases-view" id="mapCasesView" aria-hidden="true">
-            <button class="map-back" id="mapBack" type="button" aria-label="Back to map">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-              <span>Back</span>
-            </button>
-            <div class="map-cases-eyebrow" id="mapCasesEyebrow"></div>
-            <h2 class="map-cases-title" id="mapCasesTitle"></h2>
-            <div class="map-cases-grid" id="mapCasesGrid"></div>
+          <div class="gardens-areas fade-in" style="--fade-delay: 0.18s;">
+            <article class="gardens-area">
+              <div class="gardens-area-grid">
+                <a class="gardens-tile" data-road="Castelnau" data-area="Barnes" aria-label="Castelnau, Barnes">
+                  <img src="garden-after.jpg" alt="Castelnau garden" loading="lazy" decoding="async">
+                  <span class="gardens-tile-name">Castelnau</span>
+                </a>
+                <a class="gardens-tile" data-road="Lonsdale Road" data-area="Barnes" aria-label="Lonsdale Road, Barnes">
+                  <img src="garden-before.jpg" alt="Lonsdale Road garden" loading="lazy" decoding="async">
+                  <span class="gardens-tile-name">Lonsdale Road</span>
+                </a>
+                <a class="gardens-tile" data-road="Riverview Gardens" data-area="Barnes" aria-label="Riverview Gardens, Barnes">
+                  <img src="after.jpg" alt="Riverview Gardens" loading="lazy" decoding="async">
+                  <span class="gardens-tile-name">Riverview Gardens</span>
+                </a>
+                <a class="gardens-tile" data-road="Westmoreland Road" data-area="Barnes" aria-label="Westmoreland Road, Barnes">
+                  <img src="before.jpg" alt="Westmoreland Road garden" loading="lazy" decoding="async">
+                  <span class="gardens-tile-name">Westmoreland Road</span>
+                </a>
+              </div>
+              <h3 class="gardens-area-name">Barnes</h3>
+            </article>
+
+            <article class="gardens-area">
+              <div class="gardens-area-grid">
+                <a class="gardens-tile" data-road="Lytton Grove" data-area="Putney" aria-label="Lytton Grove, Putney">
+                  <img src="garden-after.jpg" alt="Lytton Grove garden" loading="lazy" decoding="async">
+                  <span class="gardens-tile-name">Lytton Grove</span>
+                </a>
+                <a class="gardens-tile" data-road="Carlton Drive" data-area="Putney" aria-label="Carlton Drive, Putney">
+                  <img src="garden-before.jpg" alt="Carlton Drive garden" loading="lazy" decoding="async">
+                  <span class="gardens-tile-name">Carlton Drive</span>
+                </a>
+                <a class="gardens-tile" data-road="Disraeli Road" data-area="Putney" aria-label="Disraeli Road, Putney">
+                  <img src="after.jpg" alt="Disraeli Road garden" loading="lazy" decoding="async">
+                  <span class="gardens-tile-name">Disraeli Road</span>
+                </a>
+                <a class="gardens-tile" data-road="Erpingham Road" data-area="Putney" aria-label="Erpingham Road, Putney">
+                  <img src="before.jpg" alt="Erpingham Road garden" loading="lazy" decoding="async">
+                  <span class="gardens-tile-name">Erpingham Road</span>
+                </a>
+              </div>
+              <h3 class="gardens-area-name">Putney</h3>
+            </article>
           </div>
         </div>
       </section>
@@ -5849,17 +6009,17 @@
         <div class="mob-menu-desc"><p>Renovation, lawn care, planting, hedges, productive gardens and vintage materials.</p></div>
       </li>
 
-      <li class="mob-menu-item" data-mob-key="map">
+      <li class="mob-menu-item" data-mob-key="gardens">
         <div class="mob-menu-row">
-          <span class="mob-menu-label">Map of Past Work</span>
+          <span class="mob-menu-label">Testimonial Gardens</span>
           <button class="mob-menu-expand" type="button" aria-expanded="false" aria-label="About this section">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <button class="mob-menu-go" type="button" data-mob-go="map" aria-label="Open map">
+          <button class="mob-menu-go" type="button" data-mob-go="gardens" aria-label="Open testimonial gardens">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
         </div>
-        <div class="mob-menu-desc"><p>The defined area Gary works across, drawn by hand. Pinch to zoom.</p></div>
+        <div class="mob-menu-desc"><p>A portfolio of past gardens, grouped by area. Tap a tile for the case study.</p></div>
       </li>
 
       <li class="mob-menu-item" data-mob-key="generator">
@@ -6063,41 +6223,54 @@
     <p><strong>@thebarnesgardener</strong></p>
   </section>
 
-  <section class="mob-section" id="m-map">
+  <section class="mob-section" id="m-gardens">
     <button class="mob-page-back" type="button" data-mob-back aria-label="Back to home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
-    <div class="mob-map-viewport" id="mobMapViewport">
-      <div class="mob-map-canvas" id="mobMapCanvas">
-        <img src="NEW MAP transparent.png" alt="Map of the work area" loading="lazy" decoding="async">
-        <svg class="mob-map-hotspots" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid meet" aria-label="Tap an area to see case studies">
-          <path data-area="notting-hill" aria-label="Notting Hill"
-            d="M 884,79 L 887,151 L 887,153 L 881,162 L 774,163 L 751,157 L 751,141 L 755,84 L 759,70 L 773,50 L 776,48 L 792,40 L 808,36 L 813,35 L 816,35 L 850,39 L 862,43 L 879,65 Z"/>
-          <path data-area="chiswick" aria-label="Chiswick"
-            d="M 462,443 L 460,291 L 463,284 L 470,279 L 543,275 L 564,276 L 592,279 L 598,285 L 596,443 Z"/>
-          <path data-area="barnes" aria-label="Barnes"
-            d="M 813,397 L 812,522 L 788,543 L 692,543 L 678,509 L 675,457 L 676,388 L 680,385 L 684,382 L 689,379 L 698,375 L 811,377 Z"/>
-          <path data-area="twickenham" aria-label="Twickenham"
-            d="M 241,767 L 240,684 L 241,624 L 249,601 L 364,600 L 368,604 L 378,637 L 378,639 L 376,735 L 372,762 L 371,768 Z"/>
-          <path data-area="clapham" aria-label="Clapham"
-            d="M 1358,501 L 1356,638 L 1223,638 L 1222,611 L 1221,476 L 1222,473 L 1223,471 L 1348,471 L 1354,476 Z"/>
-        </svg>
-      </div>
-    </div>
-    <div class="mob-map-popup" id="mobMapPopup" aria-hidden="true">
-      <div class="mob-map-popup-card" role="dialog" aria-modal="true" aria-labelledby="mobMapPopupTitle">
-        <button class="mob-map-popup-close" type="button" aria-label="Close">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-        <div class="mob-map-popup-eyebrow" id="mobMapPopupEyebrow"></div>
-        <h3 class="mob-map-popup-title" id="mobMapPopupTitle"></h3>
-        <ul class="mob-map-popup-cases" id="mobMapPopupCases"></ul>
-      </div>
-    </div>
-    <div class="mob-map-zoom" role="group" aria-label="Pan map left or right">
-      <svg class="mob-map-zoom-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-      <input type="range" class="mob-map-zoom-slider" id="mobMapZoom" min="0" max="100" step="0.5" value="50" aria-label="Pan map left or right">
-      <svg class="mob-map-zoom-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    <h2>Testimonial <em>Gardens</em>.</h2>
+    <p class="lead">A working portfolio — gardens Gary has shaped over the years.</p>
+
+    <div class="mob-gardens-list">
+      <a class="mob-gardens-card" data-road="Castelnau" data-area="Barnes">
+        <img src="garden-after.jpg" alt="Castelnau garden" loading="lazy" decoding="async">
+        <span class="mob-gardens-card-name">Castelnau</span>
+        <span class="mob-gardens-card-area">Barnes</span>
+      </a>
+      <a class="mob-gardens-card" data-road="Lonsdale Road" data-area="Barnes">
+        <img src="garden-before.jpg" alt="Lonsdale Road garden" loading="lazy" decoding="async">
+        <span class="mob-gardens-card-name">Lonsdale Road</span>
+        <span class="mob-gardens-card-area">Barnes</span>
+      </a>
+      <a class="mob-gardens-card" data-road="Riverview Gardens" data-area="Barnes">
+        <img src="after.jpg" alt="Riverview Gardens" loading="lazy" decoding="async">
+        <span class="mob-gardens-card-name">Riverview Gardens</span>
+        <span class="mob-gardens-card-area">Barnes</span>
+      </a>
+      <a class="mob-gardens-card" data-road="Westmoreland Road" data-area="Barnes">
+        <img src="before.jpg" alt="Westmoreland Road garden" loading="lazy" decoding="async">
+        <span class="mob-gardens-card-name">Westmoreland Road</span>
+        <span class="mob-gardens-card-area">Barnes</span>
+      </a>
+      <a class="mob-gardens-card" data-road="Lytton Grove" data-area="Putney">
+        <img src="garden-after.jpg" alt="Lytton Grove garden" loading="lazy" decoding="async">
+        <span class="mob-gardens-card-name">Lytton Grove</span>
+        <span class="mob-gardens-card-area">Putney</span>
+      </a>
+      <a class="mob-gardens-card" data-road="Carlton Drive" data-area="Putney">
+        <img src="garden-before.jpg" alt="Carlton Drive garden" loading="lazy" decoding="async">
+        <span class="mob-gardens-card-name">Carlton Drive</span>
+        <span class="mob-gardens-card-area">Putney</span>
+      </a>
+      <a class="mob-gardens-card" data-road="Disraeli Road" data-area="Putney">
+        <img src="after.jpg" alt="Disraeli Road garden" loading="lazy" decoding="async">
+        <span class="mob-gardens-card-name">Disraeli Road</span>
+        <span class="mob-gardens-card-area">Putney</span>
+      </a>
+      <a class="mob-gardens-card" data-road="Erpingham Road" data-area="Putney">
+        <img src="before.jpg" alt="Erpingham Road garden" loading="lazy" decoding="async">
+        <span class="mob-gardens-card-name">Erpingham Road</span>
+        <span class="mob-gardens-card-area">Putney</span>
+      </a>
     </div>
   </section>
 
@@ -6394,7 +6567,7 @@
   // Mirror the CSS breakpoint exactly so the JS-driven mobile router
    // engages on the same viewports the mobile layout is styled for.
   const mobMQ = window.matchMedia('(max-width: 900px), (max-aspect-ratio: 4/5)');
-  const MOB_PAGES = ['home', 'about', 'services', 'map', 'generator', 'blog', 'podcast', 'shop', 'contact'];
+  const MOB_PAGES = ['home', 'about', 'services', 'gardens', 'generator', 'blog', 'podcast', 'shop', 'contact'];
 
   function showMobLoader() {
     if (!mobLoader || !mobMQ.matches) return;
@@ -6811,7 +6984,7 @@
     home:     { num: '01 / Home' },
     about:    { num: '02 / About' },
     services: { num: '03 / Services' },
-    map:      { num: '04 / Map of Past Work' },
+    gardens:  { num: '04 / Testimonial Gardens' },
     latelier: { num: '05 / Vision & Quote' },
     blog:     { num: "06 / What's Growing" },
     podcast:  { num: '07 / Podcast' },
@@ -6977,7 +7150,7 @@
 
   // Keyboard arrow navigation
   // Match the sidenav order. Keyboard arrows step through this list.
-  const order = ['home', 'about', 'services', 'map', 'latelier', 'blog', 'podcast', 'shop', 'contact'];
+  const order = ['home', 'about', 'services', 'gardens', 'latelier', 'blog', 'podcast', 'shop', 'contact'];
   document.addEventListener('keydown', (e) => {
     if (e.target.matches('input, textarea, button, a')) return;
     const current = (location.hash || '#home').replace('#', '');
@@ -7146,7 +7319,7 @@
 
     mapCasesGrid.setAttribute('data-count', String(n));
     mapCasesGrid.innerHTML = data.cases.map((name, i) => `
-      <article class="map-case-box" data-road="${name}" data-area="${data.name}" tabindex="0" role="button" aria-label="Open case study, ${name}, ${data.name}">
+      <article class="map-case-box" data-road="${name}" data-area="${data.name}" aria-label="Open case study, ${name}, ${data.name}">
         <div class="map-case-num">CASE ${String(i+1).padStart(2,'0')}</div>
         <div class="map-case-name">${name}</div>
         <div class="map-case-meta">
@@ -7348,11 +7521,11 @@
   window.addEventListener('hashchange', refreshCaseOnEnter);
   refreshCaseOnEnter();
 
-  // Back button on case page → go to map (since cases are always reached from the map)
+  // Back button on case page → go to gardens (cases are reached from the gardens grid)
   if (caseBack) {
     caseBack.addEventListener('click', () => {
-      if (typeof navigateTo === 'function') navigateTo('map');
-      else location.hash = '#map';
+      if (typeof navigateTo === 'function') navigateTo('gardens');
+      else location.hash = '#gardens';
     });
   }
 
