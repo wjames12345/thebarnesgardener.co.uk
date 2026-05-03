@@ -8141,10 +8141,12 @@
   // gust fires and tops the count back up to TARGET. The entry sequence
   // takes the page from 0 → ENTRY_TARGET in soft batches; only after that
   // does the watchdog take over.
-  const MIN_LEAVES        = 75;
-  const TARGET_LEAVES     = 105;
-  const MAX_LEAVES        = 130;
-  const ENTRY_TARGET      = 120;
+  // Mobile uses the same population as desktop now that the per-leaf cost
+  // is cut (no multiply blend, no ambient-wind sampling).
+  const MIN_LEAVES        = 100;
+  const TARGET_LEAVES     = 135;
+  const MAX_LEAVES        = 160;
+  const ENTRY_TARGET      = 145;
   const ESCAPE_MARGIN     = 120;
   const LEAF_SCALE_MIN    = 0.055;
   const LEAF_SCALE_MAX    = 0.095;
@@ -8800,9 +8802,15 @@
       // "pluck a leaf and let it fall straight down". Cursor wind above
       // still applies, so the leaf blower works on them too.
       if (!this.pureGravity) {
-        const amb = ambientWindAt(this.x, this.y, t);
-        this.vx += amb.x * AMBIENT_LEAF_GAIN_BASE * ambientMul * invM * dt;
-        this.vy += amb.y * AMBIENT_LEAF_GAIN_BASE * ambientMul * invM * dt;
+        // Ambient sine-field is the heaviest per-leaf calc (6 trig calls).
+        // Skip it on mobile — weather wind + gusts already give plenty of
+        // motion variety, and on a small canvas the per-cell variation is
+        // imperceptible.
+        if (!IS_MOBILE_FIELD) {
+          const amb = ambientWindAt(this.x, this.y, t);
+          this.vx += amb.x * AMBIENT_LEAF_GAIN_BASE * ambientMul * invM * dt;
+          this.vy += amb.y * AMBIENT_LEAF_GAIN_BASE * ambientMul * invM * dt;
+        }
         // Continuous weather wind (always on, slowly drifting direction)
         this.vx += Math.cos(weatherAngle) * weatherSpeed * dt;
         this.vy += Math.sin(weatherAngle) * weatherSpeed * dt;
@@ -8909,7 +8917,9 @@
 
       ctx.save();
       ctx.globalAlpha = edgeAlpha;
-      if (this.usesMultiply) ctx.globalCompositeOperation = 'multiply';
+      // Multiply blend is a per-draw GPU state change — fine on desktop,
+      // a hot-spot on mobile GPUs where it kills batching. Skip on mobile.
+      if (this.usesMultiply && !IS_MOBILE_FIELD) ctx.globalCompositeOperation = 'multiply';
       ctx.translate(this.x, this.y);
       ctx.rotate(this.rot);
       ctx.scale(sx, flatY);
